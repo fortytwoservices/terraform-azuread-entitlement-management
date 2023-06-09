@@ -90,18 +90,6 @@ locals {
     ]
   ])
 
-  #  assignment-policies = flatten([                                                                  # Flattens the nested lists to a list with a depth of 1
-  #    for catalog in var.access-packages.entitlement-catalogs : [                                    # Iterates through all Entitlement Catalogs
-  #      for ap in catalog.access-packages : [                                                        # Iterates through all Access Packages within each Catalog
-  #        for policy in ap.assignment_policies : merge(policy, {                                     # Iterates through all Assignment Policies within each Access Package, within each Catalog
-  #          catalog_key        = catalog.display_name                                                # Creates a reference key to the Entitlement Catalog
-  #          access_package_key = "${catalog.display_name}-${ap.display_name}"                        # Creates a reference key to the Access Package
-  #          key                = "${catalog.display_name}-${ap.display_name}-${policy.display_name}" # Creates a reference key to the Assignment Policy
-  #        })
-  #      ]
-  #    ]
-  #  ])
-
   resources = flatten([                                                                              # Flattens the nested lists to a list with a depth of 1
     for catalog in var.access-packages.entitlement-catalogs : [                                      # Iterates through all Entitlement Catalogs
       for ap in catalog.access-packages : [                                                          # Iterates through all Access Packages within each Catalog
