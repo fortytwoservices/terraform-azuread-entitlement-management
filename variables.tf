@@ -78,12 +78,12 @@ variable "access-packages" {
 ############################################################################
 locals {
   entitlement-catalogs = flatten([                                    # Flattens the nested lists to a list with a depth of 1
-    for catalog in var.access-packages.entitlement-catalogs : catalog # Iterates through all Entitlement Catalogs and creates a list of them
+    for catalog in var.access-packages.entitlement_catalogs : catalog # Iterates through all Entitlement Catalogs and creates a list of them
   ])
 
   access-packages = flatten([                                      # Flattens the nested lists to a list with a depth of 1
     for catalog in var.access-packages.entitlement-catalogs : [    # Iterates through all Entitlement Catalogs
-      for ap in catalog.access-packages : merge(ap, {              # Iterates through all Access Packages within each Catalog
+      for ap in catalog.access_packages : merge(ap, {              # Iterates through all Access Packages within each Catalog
         catalog_key = catalog.display_name                         # Creates a reference key to the Entitlement Catalog
         key         = "${catalog.display_name}-${ap.display_name}" # Creates a reference key for the Access Package
       })
@@ -91,8 +91,8 @@ locals {
   ])
 
   resources = flatten([                                                                              # Flattens the nested lists to a list with a depth of 1
-    for catalog in var.access-packages.entitlement-catalogs : [                                      # Iterates through all Entitlement Catalogs
-      for ap in catalog.access-packages : [                                                          # Iterates through all Access Packages within each Catalog
+    for catalog in var.access-packages.entitlement_catalogs : [                                      # Iterates through all Entitlement Catalogs
+      for ap in catalog.access_packages : [                                                          # Iterates through all Access Packages within each Catalog
         for resource in ap.resources : merge(resource, {                                             # Iterates through all Resources within each Access Package, within each Catalog
           catalog_key        = catalog.display_name                                                  # Creates a reference key to the Entitlement Catalog
           access_package_key = "${catalog.display_name}-${ap.display_name}"                          # Creates a reference key to the Access Package
