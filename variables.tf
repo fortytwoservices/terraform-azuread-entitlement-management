@@ -50,18 +50,18 @@ variable "access-packages" {
             subject_type = string                # Type of reviewer. "singleUser", "groupMembers", "connectedOrganizationMembers", "requestorManager", "internalSponsors", "externalSponsors"
             backup       = optional(bool, false) # Indicates whether the user is a backup approver or not. "true", "false". Defaults to "false".
           }))
-
-          question = optional(list(object({      # A list of questions. One object per question
-            required     = optional(bool, false) # Whether this question is requried. true, false. Defaults to false
-            sequence     = number                # The sequence number of this question
-            default_text = string                # The default text of this question
-
-            choice = optional(list(object({ # List of choices for multiple choice. One object per choice
-              actual_value = string         # The actual value of this choice
-              default_text = string         # The default text of this question choice
-            })))
-          })))
         }))
+
+        question = optional(list(object({      # A list of questions. One object per question
+          required     = optional(bool, false) # Whether this question is requried. true, false. Defaults to false
+          sequence     = number                # The sequence number of this question
+          default_text = string                # The default text of this question
+
+          choice = optional(list(object({ # List of choices for multiple choice. One object per choice
+            actual_value = string         # The actual value of this choice
+            default_text = string         # The default text of this question choice
+          })))
+        })))
 
         resources = list(object({                             # List of resources, one resource per object
           display_name           = string                     # Descriptive display name to be used for the Terraform Resource key
@@ -73,3 +73,45 @@ variable "access-packages" {
     })
   }))
 }
+
+###   Local Variable - Identity Governance Source Variable transformation
+############################################################################
+locals {
+  entitlement-catalogs = flatten([                                    # Flattens the nested lists to a list with a depth of 1
+    for catalog in var.access-packages.entitlement-catalogs : catalog # Iterates through all Entitlement Catalogs and creates a list of them
+  ])
+
+  access-packages = flatten([                                      # Flattens the nested lists to a list with a depth of 1
+    for catalog in var.access-packages.entitlement-catalogs : [    # Iterates through all Entitlement Catalogs
+      for ap in catalog.access-packages : merge(ap, {              # Iterates through all Access Packages within each Catalog
+        catalog_key = catalog.display_name                         # Creates a reference key to the Entitlement Catalog
+        key         = "${catalog.display_name}-${ap.display_name}" # Creates a reference key for the Access Package
+      })
+    ]
+  ])
+
+  #  assignment-policies = flatten([                                                                  # Flattens the nested lists to a list with a depth of 1
+  #    for catalog in var.access-packages.entitlement-catalogs : [                                    # Iterates through all Entitlement Catalogs
+  #      for ap in catalog.access-packages : [                                                        # Iterates through all Access Packages within each Catalog
+  #        for policy in ap.assignment_policies : merge(policy, {                                     # Iterates through all Assignment Policies within each Access Package, within each Catalog
+  #          catalog_key        = catalog.display_name                                                # Creates a reference key to the Entitlement Catalog
+  #          access_package_key = "${catalog.display_name}-${ap.display_name}"                        # Creates a reference key to the Access Package
+  #          key                = "${catalog.display_name}-${ap.display_name}-${policy.display_name}" # Creates a reference key to the Assignment Policy
+  #        })
+  #      ]
+  #    ]
+  #  ])
+
+  resources = flatten([                                                                              # Flattens the nested lists to a list with a depth of 1
+    for catalog in var.access-packages.entitlement-catalogs : [                                      # Iterates through all Entitlement Catalogs
+      for ap in catalog.access-packages : [                                                          # Iterates through all Access Packages within each Catalog
+        for resource in ap.resources : merge(resource, {                                             # Iterates through all Resources within each Access Package, within each Catalog
+          catalog_key        = catalog.display_name                                                  # Creates a reference key to the Entitlement Catalog
+          access_package_key = "${catalog.display_name}-${ap.display_name}"                          # Creates a reference key to the Access Package
+          key                = "${catalog.display_name}-${ap.display_name}-${resource.display_name}" # Creates a reference key to the Resource Associations
+        })
+      ]
+    ]
+  ])
+}
+
