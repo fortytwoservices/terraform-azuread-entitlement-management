@@ -1,7 +1,7 @@
 variable "access-packages" {
   description = "A nested list of objects describing Access Packages, it's parent Catalogs, Assignment Policies and associated resources"
   type = list(object({
-    entitlement_catalogs = object({
+    entitlement_catalogs = list(object({
       display_name       = string                # Name of the Entitlement Catalog
       description        = optional(string)      # Description of the Entitlement Catalog
       externally_visible = optional(bool, false) # If the Entitlement Catalog should be visible outside of the Azure Tenant. true, false. Defaults to "false"
@@ -70,7 +70,7 @@ variable "access-packages" {
           access_type            = optional(string, "Member") # The role of access type to the specified resource. "Member", "Owner". Defaults to "Member"
         }))
       })
-    })
+    }))
   }))
 }
 
