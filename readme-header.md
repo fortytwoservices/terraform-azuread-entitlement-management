@@ -1,0 +1,30 @@
+# Terraform Module - AzureAD Entitlement Management
+
+**By Amesto Fortytwo**
+
+---
+
+# ***THIS MODULE IS UNDER DEVELOPMENT AND NOT YET RELEASED. BREAKING CHANGES MAY OCCUR WITHOUT WARNING***
+
+---
+
+This module allows you to simply deploy and manage Entitlement Management resources in Azure AD Identity Governance.
+
+The input to the module is based on Access Packages, but the information is used to create both Catalogs, Access Packages, Assignment Policies and assigning resources to both the Catalogs and Access Packages.
+
+This module aims to simplify the definition of all the resources as much as possible, but all parameter values are identical to the actual azuread resource parameters. You will find that default values are applied as often as possible, this is in persuit of as simple of a deployment as possible.
+
+All optional values are described in the input variable documentation, with it's default values.
+
+## Resources deployed by this module
+
+Which resources, and how many of each depends on your configuration
+- Entitlement Catalogs
+- Access Packages
+- Assignment Policies
+- Entitlement Catalog Resource associations
+- Access Package Resource associations
+
+*Complete list of all Terraform resources deployed is provided at the bottom of this page*
+
+
