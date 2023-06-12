@@ -60,22 +60,22 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
         approver_justification_required     = each.value.approver_justification_required
         alternative_approval_enabled        = each.value.alternative_approval_enabled
         enable_alternative_approval_in_days = each.value.alternative_approval_enabled ? each.value.enable_alternative_approval_in_days : null
-      }
 
-      primary_approver {
-        subject_type = each.value.primary_approver_subject_type
-        object_id    = each.value.primary_approver_object_id
-      }
 
-      dynamic "alternative_approver" {
-        for_each = { for k, v in each.value.alternative_approvers : k => v if each.value.alternative_approval_enabled != null ? (each.value.alternative_approvers != null ? each.value.alternative_approvers : false) : false }
+        primary_approver {
+          subject_type = each.value.primary_approver_subject_type
+          object_id    = each.value.primary_approver_object_id
+        }
 
-        content {
-          subject_type = alternative_approver.value.subject_type
-          object_id    = alternative_approver.value.object_id
+        dynamic "alternative_approver" {
+          for_each = { for k, v in each.value.alternative_approvers : k => v if each.value.alternative_approval_enabled != null ? (each.value.alternative_approvers != null ? each.value.alternative_approvers : false) : false }
+
+          content {
+            subject_type = alternative_approver.value.subject_type
+            object_id    = alternative_approver.value.object_id
+          }
         }
       }
-
     }
   }
 
