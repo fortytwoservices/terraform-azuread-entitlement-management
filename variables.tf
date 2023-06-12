@@ -7,7 +7,7 @@ variable "access-packages" {
       externally_visible = optional(bool, false) # If the Entitlement Catalog should be visible outside of the Azure Tenant. true, false. Defaults to "false"
       published          = optional(bool, true)  # If the Access Packages in this catalog are available for management. true, false. Defaults to "true"
 
-      access_packages = object({
+      access_packages = list(object({
         display_name      = string                                              # Name of the Access Package
         description       = optional(string)                                    # Description of the Access Package
         hidden            = optional(bool, false)                               # If the Access Package should be hidden from the requestor
@@ -69,7 +69,7 @@ variable "access-packages" {
           resource_origin_system = string                     # The type of resource in the origin system. "SharePointOnline", "AadApplication", "AadGroup"
           access_type            = optional(string, "Member") # The role of access type to the specified resource. "Member", "Owner". Defaults to "Member"
         }))
-      })
+      }))
     }))
   }))
 }
