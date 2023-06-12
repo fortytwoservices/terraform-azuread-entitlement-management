@@ -68,7 +68,6 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
         }
 
         dynamic "alternative_approver" {
-          #for_each = { for k, v in each.value.alternative_approvers : k => v if each.value.alternative_approval_enabled != null ? (each.value.alternative_approvers != null ? each.value.alternative_approvers : false) : false }
           for_each = each.value.alternative_approval_enabled != null ? (each.value.alternative_approvers != null ? toset(each.value.alternative_approvers) : []) : []
 
           content {
