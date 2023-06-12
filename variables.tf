@@ -103,14 +103,18 @@ locals {
   ])
 }
 
-output "entitlement-catalogs" {
-  value = local.entitlement-catalogs
+output "var-input" {
+  value = var.access-packages
 }
 
-output "access-packages" {
-  value = local.access-packages
-}
-
-output "resources" {
-  value = local.resources
-}
+#output "entitlement-catalogs" {
+#  value = local.entitlement-catalogs
+#}
+#
+#output "access-packages" {
+#  value = local.access-packages
+#}
+#
+#output "resources" {
+#  value = local.resources
+#}
