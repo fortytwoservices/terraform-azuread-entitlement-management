@@ -27,4 +27,6 @@ Which resources, and how many of each depends on your configuration
 
 *Complete list of all Terraform resources deployed is provided at the bottom of this page*
 
+## Destroy resources
+At the time of writing, there is a hard dependency from the Microsoft Azure API that requires all Assignments of the Access Package to be removed before you are allowed to destroy it. This is because there is no dedicated API call for force removing Assignments or the Access Package itself. After all Assignments have been deleted, you should be able to destroy all resources created by this module.
 
