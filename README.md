@@ -39,7 +39,7 @@ At the time of writing, there is a hard dependency from the Microsoft Azure API 
 | <a name="requirement_azuread"></a> [azuread](#requirement\_azuread) | >=2.39.0 |
 
 ## Example
-
+### Basic Example
 ```hcl
 # This example contains a typical, basic deployment of an Entitlement Catalog, with an Access Package, an Assignment Policy, and AzureAD Groups used as resources.
 # Most of the parameters and inputs are left to their default values, as they are typically the correct values in a common deployment.
@@ -104,6 +104,7 @@ module "elm" {
 }
 ```
 
+### Advanced Example
 ```hcl
 # This example contains a more advanced deployment of an Entitlement Catalog, with an Access Package, an Assignment Policy, and AzureAD Groups used as resources, specific requestors, additional justification etc.
 # Most of the parameters and inputs are left to their default values, as they are typically the correct values in a common deployment.
