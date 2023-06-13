@@ -19,11 +19,12 @@ content: |-
   {{ .Requirements }}
 
   ## Example
-
+  ### Basic Example
   ```hcl
   {{ include "examples/basic.tf" }}
   ```
 
+  ### Advanced Example
   ```hcl
   {{ include "examples/advanced.tf" }}
   ```
