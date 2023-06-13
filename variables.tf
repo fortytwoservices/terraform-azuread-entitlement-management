@@ -71,7 +71,6 @@ variable "entitlement_catalogs" {
       }))
     }))
   }))
-  #}))
 }
 
 ###   Local Variable - Identity Governance Source Variable transformation
