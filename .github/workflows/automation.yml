@@ -8,6 +8,9 @@ on:
     branches: [ "main" ]
     paths: [ "**.tf", "CHANGELOG.md"]
 
+permissions:
+  contents: read
+
 jobs:
 #### Commented out to test beta functionality in projects ####
 #  project:

@@ -8,6 +8,9 @@ on:
   schedule:
     - cron: '44 15 * * 5'
 
+permissions:
+  contents: read
+
 jobs:
   tfsec:
     name: Run tfsec sarif report
