@@ -19,9 +19,9 @@ variable "entitlement_catalogs" {
 
       # Specified requestor requires scope_type SpecificDirectorySubjects or SpecificConnectedOrganizationSubjects. Defaults to SpecificDirectorySubjects.
       requestor = optional(object({     # A block specifying the users who are allowed to request on this policy
-        subject_type = optional(string) # Type of requestor. "singleUser", "groupMembers", "connectedOrganizationMembers",
+        subject_type = optional(string) # Type of requestor. "singleUser", "groupMembers", "connectedOrganizationMembers", "requestorManager", "internalSponsors", "externalSponsors"
         object_id    = optional(string) # Object ID of the requestor(s)
-      }))                               # "requestorManager", "internalSponsors", "externalSponsors"
+      }))
 
       approval_required                   = optional(bool, true)  # Whether an approval is required. true, false. Defaults to true
       approval_required_for_extension     = optional(bool, false) # Whether approval is required to grant extension. Same approval settings used to approve initial access will apply. true, false. Defaults to false
@@ -34,12 +34,12 @@ variable "entitlement_catalogs" {
       primary_approver_object_id          = optional(string)      # Object ID of the Primary Approver(s)
 
       alternative_approvers = optional(list(object({
-        subject_type = string # Type of approver. "singleUser", "groupMembers", "connectedOrganizationMembers",
+        subject_type = string # Type of approver. "singleUser", "groupMembers", "connectedOrganizationMembers", "requestorManager", "internalSponsors", "externalSponsors"
         object_id    = string # Object ID of the Primary Approver(s)
-      })))                    # "requestorManager", "internalSponsors", "externalSponsors"
+      })))
 
       assignment_review_settings = optional(object({
-        enabled                         = optional(bool, true)             # Whether the assignment should be enabled or not
+        enabled                         = optional(bool, true)             # Whether the assignment should be enabled or not. Defaults to true
         review_frequency                = optional(string, "annual")       # How ofter reviews should happen. weekly, monthly, quarterly, halfyearly, annual. Defaults to annual
         duration_in_days                = optional(number, 14)             # How many days each occurrence of the access review series will run. Defaults to 14
         review_type                     = optional(string, "Self")         # Self review or specify reviewers. "Self", "Reviewers". Defaults to "self"
@@ -66,8 +66,8 @@ variable "entitlement_catalogs" {
 
       resources = list(object({                             # List of resources, one resource per object
         display_name           = string                     # Descriptive display name to be used for the Terraform Resource key
-        resource_origin_id     = string                     # The ID of the Azure resource to be added to the Catalog and Access Package
         resource_origin_system = string                     # The type of resource in the origin system. "SharePointOnline", "AadApplication", "AadGroup"
+        resource_origin_id     = string                     # The ID of the Azure resource to be added to the Catalog and Access Package
         access_type            = optional(string, "Member") # The role of access type to the specified resource. "Member", "Owner". Defaults to "Member"
       }))
     }))
