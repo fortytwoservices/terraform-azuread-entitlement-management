@@ -92,7 +92,7 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
       approver_justification_required = each.value.assignment_review_settings.approver_justification_required
 
       dynamic "reviewer" {
-        for_each = { for reviewer in each.value.assignment_review_settings.reviewers : reviewer.object_id => reviewer if each.value.assignment_review_settings.review_type == "Reviewers" ? true : false }
+        for_each = each.value.assignment_review_settings.review_type == "Reviewers" ? { for reviewer in each.value.assignment_review_settings.reviewers : reviewer.object_id => reviewer } : []
 
         content {
           object_id    = reviewer.value.object_id
@@ -115,7 +115,7 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
       }
 
       dynamic "choice" {
-        for_each = { for k, v in question.value.choice : k => v if question.value.choice != null }
+        for_each = question.value.choice != null ? question.value.choice : []
 
         content {
           actual_value = choice.value.actual_value
