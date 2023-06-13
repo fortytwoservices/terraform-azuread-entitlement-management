@@ -103,19 +103,3 @@ locals {
     ]
   ])
 }
-
-output "main-input-output" {
-  value = var.entitlement_catalogs
-}
-
-output "entitlement-catalogs" {
-  value = local.entitlement-catalogs
-}
-
-output "access-packages" {
-  value = local.access-packages
-}
-
-output "resources" {
-  value = local.resources
-}
