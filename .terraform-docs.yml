@@ -24,6 +24,10 @@ content: |-
   {{ include "examples/basic.tf" }}
   ```
 
+  ```hcl
+  {{ include "examples/advanced.tf" }}
+  ```
+
   {{ .Providers }}
 
   {{ .Modules }}
