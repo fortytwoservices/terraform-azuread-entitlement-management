@@ -92,7 +92,7 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
       approver_justification_required = each.value.assignment_review_settings.approver_justification_required
 
       dynamic "reviewer" {
-        for_each = each.value.assignment_review_settings.review_type == "Reviewers" ? { for reviewer in each.value.assignment_review_settings.reviewers : reviewer.object_id => reviewer } : []
+        for_each = each.value.assignment_review_settings.review_type == "Reviewers" ? { for reviewer in each.value.assignment_review_settings.reviewers : reviewer.object_id => reviewer } : toset([])
 
         content {
           object_id    = reviewer.value.object_id
