@@ -4,9 +4,6 @@
 
 ---
 
-# ***THIS MODULE IS UNDER DEVELOPMENT AND NOT YET RELEASED. BREAKING CHANGES MAY OCCUR WITHOUT WARNING***
-
----
 
 This module allows you to simply deploy and manage Entitlement Management resources in Azure AD Identity Governance.
 
