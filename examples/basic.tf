@@ -13,7 +13,7 @@ locals {
 
 resource "azuread_group" "elm_groups" {
   for_each         = toset(local.ad_groups)
-  display_name     = "${local.prefix}-${each.key}"
+  display_name     = each.key
   security_enabled = true
 }
 
