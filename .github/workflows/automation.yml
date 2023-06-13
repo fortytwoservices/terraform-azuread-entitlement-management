@@ -1,0 +1,43 @@
+name: Automation
+on:
+  issues:
+    types: [ "opened" ]
+  pull_request:
+    types: [ "opened" ]
+  push:
+    branches: [ "main" ]
+    paths: [ "**.tf", "CHANGELOG.md"]
+
+jobs:
+#### Commented out to test beta functionality in projects ####
+#  project:
+#    if: github.event_name == 'issues' || github.event_name == 'pull_request'
+#    name: Add to project
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/add-to-project@v0.3.0
+#        with:
+#          project-url: https://github.com/orgs/amestofortytwo/projects/1
+#          github-token: ${{ secrets.MARVIN_PAT }}
+
+  terraform:
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    name: Terraform checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v3
+      - name: Terraform
+        run: terraform fmt -check -recursive
+
+  release-please:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    needs: terraform
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        with:
+          token: ${{ secrets.MARVIN_PAT }}
+          release-type: terraform-module
+          signoff: "Marvin <117985362+4t2-marvin@users.noreply.github.com>"
+          #prerelease: true
