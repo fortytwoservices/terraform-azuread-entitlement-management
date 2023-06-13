@@ -104,8 +104,8 @@ module "elm" {
 }
 ```
 
-
-<details><summary>### Advanced Example</summary>
+### Advanced Example
+<details><summary>Click to expand advanced example</summary>
 
 ```hcl
 # This example contains a more advanced deployment of an Entitlement Catalog, with an Access Package, an Assignment Policy, and AzureAD Groups used as resources, specific requestors, additional justification etc.
