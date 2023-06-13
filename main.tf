@@ -104,7 +104,7 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
   }
 
   dynamic "question" {
-    for_each = toset(each.value.question != null ? [1] : [])
+    for_each = toset(each.value.question != null ? each.value.question : [])
 
     content {
       required = question.value.required
