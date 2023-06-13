@@ -166,6 +166,7 @@ resource "azuread_access_package_resource_package_association" "resource-access-
 
   depends_on = [
     azuread_access_package_catalog.entitlement-catalogs,
-    azuread_access_package.access-packages
+    azuread_access_package.access-packages,
+    azuread_access_package_resource_catalog_association.resource-catalog-associations
   ]
 }
