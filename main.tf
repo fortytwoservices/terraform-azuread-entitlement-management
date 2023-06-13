@@ -122,7 +122,7 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
         for_each = question.value.choice != null ? question.value.choice : []
 
         content {
-          actual_value = choice.value.actual_value
+          actual_value = choice.value.actual_value != null ? choice.value.actual_value : choice.value.default_text
 
           display_value {
             default_text = choice.value.default_text
