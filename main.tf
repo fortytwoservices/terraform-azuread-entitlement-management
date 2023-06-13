@@ -35,7 +35,7 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
 
   requestor_settings {
     requests_accepted = each.value.requests_accepted
-    scope_type        = each.value.scope_type
+    scope_type        = each.value.requestor == null ? each.value.scope_type : ( each.value.scope_type == "AllExistingDirectoryMemberUsers" ? "SpecificDirectorySubjects" : each.value.scope_type )
 
     dynamic "requestor" {
       for_each = toset(each.value.requestor != null ? [1] : [])

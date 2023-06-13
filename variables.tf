@@ -17,6 +17,7 @@ variable "entitlement_catalogs" {
         requests_accepted = optional(bool, true)                                # Whether to accept requests using this policy. When false, no new requests can be made using this policy. true, false. Defaults to true
         scope_type        = optional(string, "AllExistingDirectoryMemberUsers") # Specifies the scopes of the requestors. AllConfiguredConnectedOrganizationSubjects, AllExistingConnectedOrganizationSubjects, AllExistingDirectoryMemberUsers, AllExistingDirectorySubjects, AllExternalSubjects, NoSubjects, SpecificConnectedOrganizationSubjects, or SpecificDirectorySubjects Defaults to "AllExistingDirectoryMemberUsers".
 
+        # Specified requestor requires scope_type SpecificDirectorySubjects or SpecificConnectedOrganizationSubjects. Defaults to SpecificDirectorySubjects.
         requestor = optional(object({     # A block specifying the users who are allowed to request on this policy
           object_id    = optional(string) # Object ID of the requestor(s)
           subject_type = optional(string) # Type of requestor. "singleUser", "groupMembers", "connectedOrganizationMembers",
