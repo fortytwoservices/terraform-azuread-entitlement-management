@@ -19,6 +19,10 @@ resource "azuread_access_package" "access-packages" {
   display_name = each.value.display_name
   description  = each.value.description
   hidden       = try(each.value.hidden, null)
+
+  depends_on = [
+    azuread_access_package_catalog.entitlement-catalogs
+  ]
 }
 
 ###   Identity Governance - Assignment Policies
@@ -35,7 +39,7 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
 
   requestor_settings {
     requests_accepted = each.value.requests_accepted
-    scope_type        = each.value.requestor == null ? each.value.scope_type : ( each.value.scope_type == "AllExistingDirectoryMemberUsers" ? "SpecificDirectorySubjects" : each.value.scope_type )
+    scope_type        = each.value.requestor == null ? each.value.scope_type : (each.value.scope_type == "AllExistingDirectoryMemberUsers" ? "SpecificDirectorySubjects" : each.value.scope_type)
 
     dynamic "requestor" {
       for_each = toset(each.value.requestor != null ? [1] : [])
@@ -127,6 +131,13 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
       }
     }
   }
+
+  depends_on = [
+    azuread_access_package_catalog.entitlement-catalogs,
+    azuread_access_package.access-packages,
+    azuread_access_package_resource_catalog_association.resource-catalog-associations,
+    azuread_access_package_resource_package_association.resource-access-package-associations
+  ]
 }
 
 ###   Identity Governance - Resource Catalog Associations
@@ -137,6 +148,10 @@ resource "azuread_access_package_resource_catalog_association" "resource-catalog
   catalog_id             = azuread_access_package_catalog.entitlement-catalogs[each.value.catalog_key].id
   resource_origin_id     = each.value.resource_origin_id
   resource_origin_system = each.value.resource_origin_system
+
+  depends_on = [
+    azuread_access_package_catalog.entitlement-catalogs
+  ]
 }
 
 
@@ -148,4 +163,9 @@ resource "azuread_access_package_resource_package_association" "resource-access-
   catalog_resource_association_id = azuread_access_package_resource_catalog_association.resource-catalog-associations[each.key].id
   access_package_id               = azuread_access_package.access-packages[each.value.access_package_key].id
   access_type                     = each.value.access_type
+
+  depends_on = [
+    azuread_access_package_catalog.entitlement-catalogs,
+    azuread_access_package.access-packages
+  ]
 }
