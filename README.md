@@ -5,10 +5,6 @@
 
 ---
 
-# ***THIS MODULE IS UNDER DEVELOPMENT AND NOT YET RELEASED. BREAKING CHANGES MAY OCCUR WITHOUT WARNING***
-
----
-
 This module allows you to simply deploy and manage Entitlement Management resources in Azure AD Identity Governance.
 
 The input to the module is based on Access Packages, but the information is used to create both Catalogs, Access Packages, Assignment Policies and assigning resources to both the Catalogs and Access Packages.
