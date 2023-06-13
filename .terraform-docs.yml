@@ -24,10 +24,13 @@ content: |-
   {{ include "examples/basic.tf" }}
   ```
 
-  ### Advanced Example
-  ```hcl
-  {{ include "examples/advanced.tf" }}
-  ```
+  <advanced>
+    <summary>### Advanced Example</summary>
+
+    ```hcl
+    {{ include "examples/advanced.tf" }}
+    ```
+  </details>
 
   {{ .Providers }}
 
