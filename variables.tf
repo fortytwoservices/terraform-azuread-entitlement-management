@@ -1,3 +1,5 @@
+###   Input variables
+########################
 variable "entitlement_catalogs" {
   description = "A nested list of objects describing Access Packages, it's parent Catalogs, Assignment Policies and associated resources"
   type = list(object({
