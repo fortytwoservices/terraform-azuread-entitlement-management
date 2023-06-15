@@ -1,5 +1,5 @@
-###   Outputs
-################
+###   Full resource outputs
+##############################
 output "entitlement_catalogs" {
   description = "Outputs all Entitlement Catalogs created through this module"
   value       = azuread_access_package_catalog.entitlement-catalogs[*]
