@@ -12,16 +12,23 @@ permissions:
   contents: read
 
 jobs:
-#### Commented out to test beta functionality in projects ####
-#  project:
-#    if: github.event_name == 'issues' || github.event_name == 'pull_request'
-#    name: Add to project
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/add-to-project@v0.3.0
-#        with:
-#          project-url: https://github.com/orgs/amestofortytwo/projects/1
-#          github-token: ${{ secrets.MARVIN_PAT }}
+  update-readme:
+    if: github.event_name == 'pull_request'
+    name: Update README for changed modules
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Render terraform docs and push changes back to PR
+        uses: terraform-docs/gh-actions@f6d59f89a280fa0a3febf55ef68f146784b20ba0 # v1.0.0
+        with:
+          working-dir: .
+          git-push: "true"
+          git-push-sign-off: "true"
+          config-file: ".terraform-docs.yml"
 
   terraform:
     if: github.event_name == 'push' || github.event_name == 'pull_request'
