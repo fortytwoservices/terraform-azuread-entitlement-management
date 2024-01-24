@@ -30,6 +30,8 @@ jobs:
           git-push: "true"
           git-push-sign-off: "true"
           config-file: ".terraform-docs.yml"
+          git-push-user-email: "41898282+github-actions[bot]@users.noreply.github.com"
+          git-push-user-name: "github-actions[bot]"
 
   terraform:
     if: github.event_name == 'push' || github.event_name == 'pull_request'
