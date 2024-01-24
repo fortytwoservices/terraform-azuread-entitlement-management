@@ -9,7 +9,8 @@ on:
     paths: [ "**.tf", "CHANGELOG.md"]
 
 permissions:
-  contents: read
+  pull-requests: write
+  contents: write
 
 jobs:
   update-readme:
@@ -29,6 +30,8 @@ jobs:
           git-push: "true"
           git-push-sign-off: "true"
           config-file: ".terraform-docs.yml"
+          git-push-user-email: "41898282+github-actions[bot]@users.noreply.github.com"
+          git-push-user-name: "github-actions[bot]"
 
   terraform:
     if: github.event_name == 'push' || github.event_name == 'pull_request'
@@ -45,7 +48,7 @@ jobs:
     if: github.event_name == 'push'
     needs: terraform
     steps:
-      - uses: google-github-actions/release-please-action@cc61a07e2da466bebbc19b3a7dd01d6aecb20d1e # v4.0.2
+      - uses: google-github-actions/release-please-action@db8f2c60ee802b3748b512940dde88eabd7b7e01 # v3.7.13
         with:
           token: ${{ secrets.MARVIN_PAT }}
           release-type: terraform-module
