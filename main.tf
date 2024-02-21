@@ -144,7 +144,7 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
 ###   Identity Governance - Resource Catalog Associations
 ############################################################
 resource "azuread_access_package_resource_catalog_association" "resource-catalog-associations" {
-  for_each = distinct({ for resource in local.resources : resource.catalog_resource_association_key => resource })
+  for_each = distinct(local.distinct_catalog_resources)
 
   catalog_id             = azuread_access_package_catalog.entitlement-catalogs[each.value.catalog_key].id
   resource_origin_id     = each.value.resource_origin_id

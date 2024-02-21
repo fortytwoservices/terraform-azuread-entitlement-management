@@ -103,4 +103,6 @@ locals {
       ]
     ]
   ])
+
+  catalog_resources = { for resource in local.resources : resource.catalog_resource_association_key => resource }
 }
