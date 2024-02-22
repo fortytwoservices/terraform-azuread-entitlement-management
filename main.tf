@@ -144,7 +144,6 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
 ###   Identity Governance - Resource Catalog Associations
 ############################################################
 resource "azuread_access_package_resource_catalog_association" "resource-catalog-associations" {
-  #for_each = merge({ for resource in local.resources : resource.catalog_resource_association_key => resource... }) # Merging to remove duplicates
   for_each = { for resource in local.resource-catalog-associations-filtered : resource.catalog_resource_association_key => resource }
 
   catalog_id             = azuread_access_package_catalog.entitlement-catalogs[each.value.catalog_key].id
