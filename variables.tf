@@ -103,4 +103,6 @@ locals {
       ]
     ]
   ])
+
+  resource-catalog-associations-filtered = values(zipmap(local.resources[*].catalog_resource_association_key, local.resources))
 }
