@@ -48,7 +48,7 @@ jobs:
     if: github.event_name == 'push'
     needs: terraform
     steps:
-      - uses: google-github-actions/release-please-action@db8f2c60ee802b3748b512940dde88eabd7b7e01 # v3.7.13
+      - uses: google-github-actions/release-please-action@a37ac6e4f6449ce8b3f7607e4d97d0146028dc0b # v4.1.0
         with:
           token: ${{ secrets.MARVIN_PAT }}
           release-type: terraform-module
