@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/compare/v1.0.1...v1.0.2) (2024-05-31)
+
+
+### Bug Fixes
+
+* changed the conditional check of approval_required input parameter to not check for null. The value has a default value defined in the input variable, and will never be null. ([f324b60](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/f324b60d3a9429d2d32b04cb804b5a84ead8d7b7))
+
 ## [1.0.1](https://github.com/amestofortytwo/terraform-azuread-entitlement-management/compare/v1.0.0...v1.0.1) (2024-02-22)
 
 
