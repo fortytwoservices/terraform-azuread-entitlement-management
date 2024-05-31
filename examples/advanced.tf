@@ -2,6 +2,19 @@
 # Most of the parameters and inputs are left to their default values, as they are typically the correct values in a common deployment.
 # Refer to the [documentation](https://github.com/fortytwoservices/terraform-azuread-entitlement-management) for all available input parameters.
 
+###   Terraform Providers
+############################
+terraform {
+  required_version = ">=1.4.6"
+
+  required_providers {
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = ">=2.39.0"
+    }
+  }
+}
+
 ###   Azure AD Groups
 ########################
 locals {
