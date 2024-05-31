@@ -58,7 +58,7 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
     requestor_justification_required = each.value.requestor_justification_required
 
     dynamic "approval_stage" {
-      for_each = toset(each.value.approval_required != null ? [1] : [])
+      for_each = toset(each.value.approval_required ? [1] : [])
 
       content {
         approval_timeout_in_days            = each.value.approval_timeout_in_days
