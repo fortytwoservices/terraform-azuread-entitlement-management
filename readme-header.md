@@ -1,6 +1,6 @@
 # Terraform Module - AzureAD Entitlement Management
 
-**By Amesto Fortytwo**
+**By Fortytwo**
 
 ---
 

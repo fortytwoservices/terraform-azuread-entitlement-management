@@ -21,7 +21,8 @@ resource "azuread_group" "elm_groups" {
 ###   Azure AD Entitlement Management
 ########################################
 module "elm" {
-  source = "git@github.com:amestofortytwo/terraform-azuread-entitlement-management"
+  source  = "fortytwoservices/entitlement-management/azuread"
+  version = "2.0.0"
 
   entitlement_catalogs = [                      # A list of Entitlement Catalogs, one object per Catalog
     {                                           #

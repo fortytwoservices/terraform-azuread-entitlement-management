@@ -1,6 +1,6 @@
 # This example contains a more advanced deployment of an Entitlement Catalog, with an Access Package, an Assignment Policy, and AzureAD Groups used as resources, specific requestors, additional justification etc.
 # Most of the parameters and inputs are left to their default values, as they are typically the correct values in a common deployment.
-# Refer to the [documentation](https://github.com/amestofortytwo/terraform-azuread-entitlement-management) for all available input parameters.
+# Refer to the [documentation](https://github.com/fortytwoservices/terraform-azuread-entitlement-management) for all available input parameters.
 
 ###   Azure AD Groups
 ########################
@@ -23,7 +23,8 @@ resource "azuread_group" "elm_groups" {
 ###   Azure AD Entitlement Management
 ########################################
 module "elm" {
-  source = "git@github.com:amestofortytwo/terraform-azuread-entitlement-management"
+  source  = "fortytwoservices/entitlement-management/azuread"
+  version = "2.0.0"
 
   entitlement_catalogs = [                      # A list of Entitlement Catalogs, one object per Catalog
     {                                           #
