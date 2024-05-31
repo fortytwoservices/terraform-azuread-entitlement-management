@@ -1,10 +1,5 @@
 <!-- BEGIN_TF_DOCS -->
 # Terraform Module - AzureAD Entitlement Management
-
-**By Fortytwo**
-
----
-
 This module allows you to simply deploy and manage Entitlement Management resources in Azure AD Identity Governance.
 
 The input to the module is based on Access Packages, but the information is used to create both Catalogs, Access Packages, Assignment Policies and assigning resources to both the Catalogs and Access Packages.
@@ -14,7 +9,6 @@ This module aims to simplify the definition of all the resources as much as poss
 All optional values are described in the input variable documentation, with it's default values.
 
 ## Resources deployed by this module
-
 Which resources, and how many of each depends on your configuration
 - Entitlement Catalogs
 - Access Packages
@@ -29,18 +23,32 @@ At the time of writing, there is a hard dependency from the Microsoft Azure API 
 
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.4.6 |
-| <a name="requirement_azuread"></a> [azuread](#requirement\_azuread) | >=2.39.0 |
+The following requirements are needed by this module:
+
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>=1.4.6)
+
+- <a name="requirement_azuread"></a> [azuread](#requirement\_azuread) (>=2.39.0)
 
 ## Example
 ### Basic Example
+
 ```hcl
 # This example contains a typical, basic deployment of an Entitlement Catalog, with an Access Package, an Assignment Policy, and AzureAD Groups used as resources.
 # Most of the parameters and inputs are left to their default values, as they are typically the correct values in a common deployment.
 # Refer to the [documentation](https://github.com/fortytwoservices/terraform-azuread-entitlement-management) for all available input parameters.
 
+###   Terraform Providers
+############################
+terraform {
+  required_version = ">=1.4.6"
+
+  required_providers {
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = ">=2.39.0"
+    }
+  }
+}
 
 ###   Azure AD Groups
 ########################
@@ -114,6 +122,19 @@ module "elm" {
   # This example contains a more advanced deployment of an Entitlement Catalog, with an Access Package, an Assignment Policy, and AzureAD Groups used as resources, specific requestors, additional justification etc.
 # Most of the parameters and inputs are left to their default values, as they are typically the correct values in a common deployment.
 # Refer to the [documentation](https://github.com/fortytwoservices/terraform-azuread-entitlement-management) for all available input parameters.
+
+###   Terraform Providers
+############################
+terraform {
+  required_version = ">=1.4.6"
+
+  required_providers {
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = ">=2.39.0"
+    }
+  }
+}
 
 ###   Azure AD Groups
 ########################
@@ -218,41 +239,145 @@ module "elm" {
   ]
 }
   ```
+
 </blockquote></details>
 
 ## Providers
 
-| Name | Version |
-|------|---------|
-| <a name="provider_azuread"></a> [azuread](#provider\_azuread) | >=2.39.0 |
+The following providers are used by this module:
+
+- <a name="provider_azuread"></a> [azuread](#provider\_azuread) (>=2.39.0)
 
 ## Modules
 
 No modules.
 
-## Inputs
+<!-- markdownlint-disable MD013 -->
+## Required Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_entitlement_catalogs"></a> [entitlement\_catalogs](#input\_entitlement\_catalogs) | A nested list of objects describing Access Packages, it's parent Catalogs, Assignment Policies and associated resources | <pre>list(object({                         # List of Entitlement Catalogs, one object for each catalog<br>    display_name       = string                # Name of the Entitlement Catalog<br>    description        = optional(string)      # Description of the Entitlement Catalog<br>    externally_visible = optional(bool, false) # If the Entitlement Catalog should be visible outside of the Azure Tenant. true, false. Defaults to "false"<br>    published          = optional(bool, true)  # If the Access Packages in this catalog are available for management. true, false. Defaults to "true"<br><br>    access_packages = list(object({<br>      display_name      = string                                              # Name of the Access Package<br>      description       = optional(string)                                    # Description of the Access Package<br>      hidden            = optional(bool, false)                               # If the Access Package should be hidden from the requestor<br>      duration_in_days  = optional(number)                                    # How many days the assignment is valid for. Conflicts with "expiration_date"<br>      expiration_date   = optional(string)                                    # The date that this assignment expires, in RFC3339 format. Conflicts with "duration_in_days"<br>      extension_enabled = optional(bool, true)                                # Whether users will be able to request extension before it expires. true, false. Defaults to true<br>      requests_accepted = optional(bool, true)                                # Whether to accept requests using this policy. When false, no new requests can be made using this policy. true, false. Defaults to true<br>      scope_type        = optional(string, "AllExistingDirectoryMemberUsers") # Specifies the scopes of the requestors. AllConfiguredConnectedOrganizationSubjects, AllExistingConnectedOrganizationSubjects, AllExistingDirectoryMemberUsers, AllExistingDirectorySubjects, AllExternalSubjects, NoSubjects, SpecificConnectedOrganizationSubjects, or SpecificDirectorySubjects Defaults to "AllExistingDirectoryMemberUsers".<br><br>      # Specified requestor requires scope_type SpecificDirectorySubjects or SpecificConnectedOrganizationSubjects. Defaults to SpecificDirectorySubjects.<br>      requestor = optional(object({     # A block specifying the users who are allowed to request on this policy<br>        subject_type = optional(string) # Type of requestor. "singleUser", "groupMembers", "connectedOrganizationMembers", "requestorManager", "internalSponsors", "externalSponsors"<br>        object_id    = optional(string) # Object ID of the requestor(s)<br>      }))<br><br>      approval_required                   = optional(bool, true)  # Whether an approval is required. true, false. Defaults to true<br>      approval_required_for_extension     = optional(bool, false) # Whether approval is required to grant extension. Same approval settings used to approve initial access will apply. true, false. Defaults to false<br>      requestor_justification_required    = optional(bool, false) # Whether a requestor is required to provide a justification to request an access package. true, false. Defaults to false<br>      approval_timeout_in_days            = optional(number, 14)  # Maximum number of days within which a request most be approved. Defaults to 14<br>      approver_justification_required     = optional(bool, false) # Whether an approver must provide a justification for their decision. Defaults to "false"<br>      alternative_approval_enabled        = optional(bool, false) # Whether alternative approvers are enabled. Defaults to false<br>      enable_alternative_approval_in_days = optional(number)      # Number of days before the request is forwarded to alternative approvers<br><br>      primary_approvers = optional(list(object({ # A list of objects, with one object for each Primary Approver<br>        subject_type = string                    # Specifies the type of user. singleUser, groupMembers, connectedOrganizationMembers, requestorManager, internalSponsors, or externalSponsors<br>        object_id    = string                    # Object ID of the Primary Approver<br>        backup       = optional(bool, false)     # For a user in an approval stage, this property indicates whether the user is a backup fallback appover<br>      })))<br><br>      alternative_approvers = optional(list(object({<br>        subject_type = string                # Type of approver. "singleUser", "groupMembers", "connectedOrganizationMembers", "requestorManager", "internalSponsors", "externalSponsors"<br>        object_id    = string                # Object ID of the Primary Approver(s)<br>        backup       = optional(bool, false) # For a user in an approval stage, this property indicates whether the user is a backup fallback appover<br>      })))<br><br>      assignment_review_settings = optional(object({<br>        enabled                         = optional(bool, true)             # Whether the assignment should be enabled or not. Defaults to true<br>        review_frequency                = optional(string, "annual")       # How ofter reviews should happen. weekly, monthly, quarterly, halfyearly, annual. Defaults to annual<br>        duration_in_days                = optional(number, 14)             # How many days each occurrence of the access review series will run. Defaults to 14<br>        review_type                     = optional(string, "Self")         # Self review or specify reviewers. "Self", "Reviewers". Defaults to "self"<br>        access_review_timeout_behavior  = optional(string, "removeAccess") # What happens if access review times out. "keepAccess", "removeAccess", "acceptAccessRecommendation". Defaults to "removeAccess"<br>        approver_justification_required = optional(bool, false)            # Whether a reviewer needs to provide a justification for their decision<br><br>        reviewers = list(object({              # List of reviewers. One object per reviewer<br>          subject_type = string                # Type of reviewer. "singleUser", "groupMembers", "connectedOrganizationMembers", "requestorManager", "internalSponsors", "externalSponsors"<br>          object_id    = string                # Object ID of the reviewer<br>          backup       = optional(bool, false) # Indicates whether the user is a backup approver or not. "true", "false". Defaults to "false".<br>        }))<br>      }))<br><br>      question = optional(list(object({      # A list of questions. One object per question<br>        required     = optional(bool, false) # Whether this question is requried. true, false. Defaults to false<br>        sequence     = number                # The sequence number of this question<br>        default_text = string                # The default text of this question<br><br>        choice = optional(list(object({   # List of choices for multiple choice. One object per choice<br>          default_text = string           # The default text of this question choice<br>          actual_value = optional(string) # The actual value of this choice. Defaults to default_text value<br>        })))<br>      })))<br><br>      resources = list(object({                             # List of resources, one resource per object<br>        display_name           = string                     # Descriptive display name to be used for the Terraform Resource key<br>        resource_origin_system = string                     # The type of resource in the origin system. "SharePointOnline", "AadApplication", "AadGroup"<br>        resource_origin_id     = string                     # The ID of the Azure resource to be added to the Catalog and Access Package<br>        access_type            = optional(string, "Member") # The role of access type to the specified resource. "Member", "Owner". Defaults to "Member"<br>      }))<br>    }))<br>  }))</pre> | n/a | yes |
+The following input variables are required:
+
+### <a name="input_entitlement_catalogs"></a> [entitlement\_catalogs](#input\_entitlement\_catalogs)
+
+Description: A nested list of objects describing Access Packages, it's parent Catalogs, Assignment Policies and associated resources
+
+Type:
+
+```hcl
+list(object({                         # List of Entitlement Catalogs, one object for each catalog
+    display_name       = string                # Name of the Entitlement Catalog
+    description        = optional(string)      # Description of the Entitlement Catalog
+    externally_visible = optional(bool, false) # If the Entitlement Catalog should be visible outside of the Azure Tenant. true, false. Defaults to "false"
+    published          = optional(bool, true)  # If the Access Packages in this catalog are available for management. true, false. Defaults to "true"
+
+    access_packages = list(object({
+      display_name      = string                                              # Name of the Access Package
+      description       = optional(string)                                    # Description of the Access Package
+      hidden            = optional(bool, false)                               # If the Access Package should be hidden from the requestor
+      duration_in_days  = optional(number)                                    # How many days the assignment is valid for. Conflicts with "expiration_date"
+      expiration_date   = optional(string)                                    # The date that this assignment expires, in RFC3339 format. Conflicts with "duration_in_days"
+      extension_enabled = optional(bool, true)                                # Whether users will be able to request extension before it expires. true, false. Defaults to true
+      requests_accepted = optional(bool, true)                                # Whether to accept requests using this policy. When false, no new requests can be made using this policy. true, false. Defaults to true
+      scope_type        = optional(string, "AllExistingDirectoryMemberUsers") # Specifies the scopes of the requestors. AllConfiguredConnectedOrganizationSubjects, AllExistingConnectedOrganizationSubjects, AllExistingDirectoryMemberUsers, AllExistingDirectorySubjects, AllExternalSubjects, NoSubjects, SpecificConnectedOrganizationSubjects, or SpecificDirectorySubjects Defaults to "AllExistingDirectoryMemberUsers".
+
+      # Specified requestor requires scope_type SpecificDirectorySubjects or SpecificConnectedOrganizationSubjects. Defaults to SpecificDirectorySubjects.
+      requestor = optional(object({     # A block specifying the users who are allowed to request on this policy
+        subject_type = optional(string) # Type of requestor. "singleUser", "groupMembers", "connectedOrganizationMembers", "requestorManager", "internalSponsors", "externalSponsors"
+        object_id    = optional(string) # Object ID of the requestor(s)
+      }))
+
+      approval_required                   = optional(bool, true)  # Whether an approval is required. true, false. Defaults to true
+      approval_required_for_extension     = optional(bool, false) # Whether approval is required to grant extension. Same approval settings used to approve initial access will apply. true, false. Defaults to false
+      requestor_justification_required    = optional(bool, false) # Whether a requestor is required to provide a justification to request an access package. true, false. Defaults to false
+      approval_timeout_in_days            = optional(number, 14)  # Maximum number of days within which a request most be approved. Defaults to 14
+      approver_justification_required     = optional(bool, false) # Whether an approver must provide a justification for their decision. Defaults to "false"
+      alternative_approval_enabled        = optional(bool, false) # Whether alternative approvers are enabled. Defaults to false
+      enable_alternative_approval_in_days = optional(number)      # Number of days before the request is forwarded to alternative approvers
+
+      primary_approvers = optional(list(object({ # A list of objects, with one object for each Primary Approver
+        subject_type = string                    # Specifies the type of user. singleUser, groupMembers, connectedOrganizationMembers, requestorManager, internalSponsors, or externalSponsors
+        object_id    = string                    # Object ID of the Primary Approver
+        backup       = optional(bool, false)     # For a user in an approval stage, this property indicates whether the user is a backup fallback appover
+      })))
+
+      alternative_approvers = optional(list(object({
+        subject_type = string                # Type of approver. "singleUser", "groupMembers", "connectedOrganizationMembers", "requestorManager", "internalSponsors", "externalSponsors"
+        object_id    = string                # Object ID of the Primary Approver(s)
+        backup       = optional(bool, false) # For a user in an approval stage, this property indicates whether the user is a backup fallback appover
+      })))
+
+      assignment_review_settings = optional(object({
+        enabled                         = optional(bool, true)             # Whether the assignment should be enabled or not. Defaults to true
+        review_frequency                = optional(string, "annual")       # How ofter reviews should happen. weekly, monthly, quarterly, halfyearly, annual. Defaults to annual
+        duration_in_days                = optional(number, 14)             # How many days each occurrence of the access review series will run. Defaults to 14
+        review_type                     = optional(string, "Self")         # Self review or specify reviewers. "Self", "Reviewers". Defaults to "self"
+        access_review_timeout_behavior  = optional(string, "removeAccess") # What happens if access review times out. "keepAccess", "removeAccess", "acceptAccessRecommendation". Defaults to "removeAccess"
+        approver_justification_required = optional(bool, false)            # Whether a reviewer needs to provide a justification for their decision
+
+        reviewers = list(object({              # List of reviewers. One object per reviewer
+          subject_type = string                # Type of reviewer. "singleUser", "groupMembers", "connectedOrganizationMembers", "requestorManager", "internalSponsors", "externalSponsors"
+          object_id    = string                # Object ID of the reviewer
+          backup       = optional(bool, false) # Indicates whether the user is a backup approver or not. "true", "false". Defaults to "false".
+        }))
+      }))
+
+      question = optional(list(object({      # A list of questions. One object per question
+        required     = optional(bool, false) # Whether this question is requried. true, false. Defaults to false
+        sequence     = number                # The sequence number of this question
+        default_text = string                # The default text of this question
+
+        choice = optional(list(object({   # List of choices for multiple choice. One object per choice
+          default_text = string           # The default text of this question choice
+          actual_value = optional(string) # The actual value of this choice. Defaults to default_text value
+        })))
+      })))
+
+      resources = list(object({                             # List of resources, one resource per object
+        display_name           = string                     # Descriptive display name to be used for the Terraform Resource key
+        resource_origin_system = string                     # The type of resource in the origin system. "SharePointOnline", "AadApplication", "AadGroup"
+        resource_origin_id     = string                     # The ID of the Azure resource to be added to the Catalog and Access Package
+        access_type            = optional(string, "Member") # The role of access type to the specified resource. "Member", "Owner". Defaults to "Member"
+      }))
+    }))
+  }))
+```
+
+## Optional Inputs
+
+No optional inputs.
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_entitlement_catalogs"></a> [entitlement\_catalogs](#output\_entitlement\_catalogs) | Outputs all Entitlement Catalogs created through this module |
-| <a name="output_access_packages"></a> [access\_packages](#output\_access\_packages) | Outputs all Access Packages created through this module |
-| <a name="output_assignment_policies"></a> [assignment\_policies](#output\_assignment\_policies) | Outputs all Access Package Assignment Policies created through this module |
-| <a name="output_resource_catalog_associations"></a> [resource\_catalog\_associations](#output\_resource\_catalog\_associations) | Outputs all Resources associated with the Entitlement Catalogs |
-| <a name="output_resource_access_package_associations"></a> [resource\_access\_package\_associations](#output\_resource\_access\_package\_associations) | Outputs all Resources associated with the Access Packages |
+The following outputs are exported:
 
+### <a name="output_entitlement_catalogs"></a> [entitlement\_catalogs](#output\_entitlement\_catalogs)
+
+Description: Outputs all Entitlement Catalogs created through this module
+
+### <a name="output_access_packages"></a> [access\_packages](#output\_access\_packages)
+
+Description: Outputs all Access Packages created through this module
+
+### <a name="output_assignment_policies"></a> [assignment\_policies](#output\_assignment\_policies)
+
+Description: Outputs all Access Package Assignment Policies created through this module
+
+### <a name="output_resource_catalog_associations"></a> [resource\_catalog\_associations](#output\_resource\_catalog\_associations)
+
+Description: Outputs all Resources associated with the Entitlement Catalogs
+
+### <a name="output_resource_access_package_associations"></a> [resource\_access\_package\_associations](#output\_resource\_access\_package\_associations)
+
+Description: Outputs all Resources associated with the Access Packages
+
+<!-- markdownlint-enable -->
 ## Resources
 
-| Name | Type |
-|------|------|
-| [azuread_access_package.access-packages](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package) | resource |
-| [azuread_access_package_assignment_policy.assignment_policies](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_assignment_policy) | resource |
-| [azuread_access_package_catalog.entitlement-catalogs](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_catalog) | resource |
-| [azuread_access_package_resource_catalog_association.resource-catalog-associations](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_resource_catalog_association) | resource |
-| [azuread_access_package_resource_package_association.resource-access-package-associations](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_resource_package_association) | resource |
+The following resources are used by this module:
+
+- [azuread_access_package.access-packages](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package) (resource)
+- [azuread_access_package_assignment_policy.assignment_policies](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_assignment_policy) (resource)
+- [azuread_access_package_catalog.entitlement-catalogs](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_catalog) (resource)
+- [azuread_access_package_resource_catalog_association.resource-catalog-associations](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_resource_catalog_association) (resource)
+- [azuread_access_package_resource_package_association.resource-access-package-associations](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_resource_package_association) (resource)
 <!-- END_TF_DOCS -->
