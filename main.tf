@@ -71,8 +71,8 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
           for_each = each.value.approval_required ? (each.value.primary_approvers != null ? toset(each.value.primary_approvers) : []) : []
 
           content {
-            subject_type = primary_approver.value.primary_approver_subject_type
-            object_id    = primary_approver.value.primary_approver_object_id
+            subject_type = primary_approver.value.subject_type
+            object_id    = primary_approver.value.object_id
           }
         }
 
