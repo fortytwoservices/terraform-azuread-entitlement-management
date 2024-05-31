@@ -73,6 +73,7 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
           content {
             subject_type = primary_approver.value.subject_type
             object_id    = primary_approver.value.object_id
+            backup       = primary_approver.value.backup
           }
         }
 
@@ -82,6 +83,7 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
           content {
             subject_type = alternative_approver.value.subject_type
             object_id    = alternative_approver.value.object_id
+            backup       = primary_approver.value.backup
           }
         }
       }
