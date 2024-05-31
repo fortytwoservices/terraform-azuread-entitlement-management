@@ -30,16 +30,21 @@ module "elm" {
       display_name = "${local.prefix}-catalog1" # Pretty Display Name for the Catalog
       description  = "ELM test catalog1"        # Description of the Catalog
 
-      access_packages = [                                                                           # List of Access Packages, one object for each Access Package
-        {                                                                                           #
-          display_name                        = "${local.prefix}-access_package1"                   # Pretty Display Name for the Access Package
-          description                         = "ELM test access package1"                          # Description of the Access Package
-          duration_in_days                    = 30                                                  # How many days the assignment is valid for. Conflicts with "expiration_date"
-          requestor_justification_required    = true                                                # Whether a requestor is required to provide a justification to request an access package. true, false. Defaults to false
-          primary_approver_subject_type       = "groupMembers"                                      # Specifies the type of user. singleUser, groupMembers, connectedOrganizationMembers, requestorManager, internalSponsors, or externalSponsors
-          primary_approver_object_id          = azuread_group.elm_groups["elm_approvers"].object_id # Object ID of the Primary Approver(s)
-          alternative_approval_enabled        = true                                                # If approval review should time out and be forwarded to alternative approvers
-          enable_alternative_approval_in_days = 7                                                   # How many days until approvel review should be forwarded to alternative approvers
+      access_packages = [                                                         # List of Access Packages, one object for each Access Package
+        {                                                                         #
+          display_name                        = "${local.prefix}-access_package1" # Pretty Display Name for the Access Package
+          description                         = "ELM test access package1"        # Description of the Access Package
+          duration_in_days                    = 30                                # How many days the assignment is valid for. Conflicts with "expiration_date"
+          requestor_justification_required    = true                              # Whether a requestor is required to provide a justification to request an access package. true, false. Defaults to false
+          alternative_approval_enabled        = true                              # If approval review should time out and be forwarded to alternative approvers
+          enable_alternative_approval_in_days = 7                                 # How many days until approvel review should be forwarded to alternative approvers
+
+          primary_approvers = [
+            {
+              subject_type = "groupMembers"
+              object_id    = azuread_group.elm_groups["elm_approvers"].object_id # Object ID of the Primary Approver(s)
+            }
+          ]
 
           alternative_approvers = [                                                          # List of Alternative Approvers, one object per approver
             {                                                                                #

@@ -28,13 +28,18 @@ module "elm" {
       display_name = "${local.prefix}-catalog1" # Pretty Display Name for the Catalog
       description  = "ELM test catalog1"        # Description of the Catalog
 
-      access_packages = [                                                                     # List of Access Packages, one object for each Access Package
-        {                                                                                     #
-          display_name                  = "${local.prefix}-access_package1"                   # Pretty Display Name for the Access Package
-          description                   = "ELM test access package1"                          # Description of the Access Package
-          duration_in_days              = 30                                                  # How many days the assignment is valid for. Conflicts with "expiration_date"
-          primary_approver_subject_type = "groupMembers"                                      # Specifies the type of user. singleUser, groupMembers, connectedOrganizationMembers, requestorManager, internalSponsors, or externalSponsors
-          primary_approver_object_id    = azuread_group.elm_groups["elm_approvers"].object_id # Object ID of the Primary Approver(s)
+      access_packages = [                                      # List of Access Packages, one object for each Access Package
+        {                                                      #
+          display_name     = "${local.prefix}-access_package1" # Pretty Display Name for the Access Package
+          description      = "ELM test access package1"        # Description of the Access Package
+          duration_in_days = 30                                # How many days the assignment is valid for. Conflicts with "expiration_date"
+
+          primary_approvers = [
+            {
+              subject_type = "groupMembers"
+              object_id    = azuread_group.elm_groups["elm_approvers"].object_id # Object ID of the Primary Approver(s)
+            }
+          ]
 
           assignment_review_settings = { # Review block that specifies how approvals is handled
             enabled = true               # Whether the assignment should be enabled or not. Defaults to true
