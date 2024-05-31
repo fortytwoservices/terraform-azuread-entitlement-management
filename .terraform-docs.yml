@@ -1,6 +1,6 @@
 version: ">= 0.15.0"
 
-formatter: markdown
+formatter: "markdown document"
 
 header-from: readme-header.md
 footer-from: ""
@@ -9,10 +9,6 @@ sections:
   hide: []
   show: []
 
-
-  hide-all: false
-  show-all: true
-
 content: |-
   {{ .Header }}
 
@@ -20,6 +16,7 @@ content: |-
 
   ## Example
   ### Basic Example
+
   ```hcl
   {{ include "examples/basic.tf" }}
   ```
@@ -30,16 +27,19 @@ content: |-
     ```hcl
     {{ include "examples/advanced.tf" }}
     ```
+
   </blockquote></details>
 
   {{ .Providers }}
 
   {{ .Modules }}
 
+  <!-- markdownlint-disable MD013 -->
   {{ .Inputs }}
 
   {{ .Outputs }}
 
+  <!-- markdownlint-enable -->
   {{ .Resources }}
 
 output:
@@ -68,6 +68,7 @@ settings:
   html: true
   indent: 2
   lockfile: true
+  read-comments: true
   required: true
   sensitive: true
   type: true
