@@ -14,7 +14,10 @@ content: |-
 
   {{ .Requirements }}
 
+  <!-- markdownlint-disable MD013 -->
+
   ## Example
+
   ### Basic Example
 
   ```hcl
@@ -22,6 +25,7 @@ content: |-
   ```
 
   ### Advanced Example
+
   <details><summary>Click to expand advanced example</summary>
 
     ```hcl
@@ -29,6 +33,8 @@ content: |-
     ```
 
   </blockquote></details>
+
+  <!-- markdownlint-enable -->
 
   {{ .Providers }}
 
