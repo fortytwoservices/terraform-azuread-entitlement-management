@@ -36,6 +36,7 @@ The following requirements are needed by this module:
 - azuread (>=2.39.0)
 
 <!-- markdownlint-disable MD022 -->
+<!-- markdownlint-disable MD033 -->
 ## Example
 ### Basic Example
 
