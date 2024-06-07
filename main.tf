@@ -67,9 +67,14 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
         enable_alternative_approval_in_days = each.value.alternative_approval_enabled ? each.value.enable_alternative_approval_in_days : null
 
 
-        primary_approver {
-          subject_type = each.value.primary_approver_subject_type
-          object_id    = each.value.primary_approver_object_id
+        dynamic "primary_approver" {
+          for_each = each.value.approval_required ? (each.value.primary_approvers != null ? toset(each.value.primary_approvers) : []) : []
+
+          content {
+            subject_type = primary_approver.value.subject_type
+            object_id    = primary_approver.value.object_id
+            backup       = primary_approver.value.backup
+          }
         }
 
         dynamic "alternative_approver" {
@@ -78,6 +83,7 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
           content {
             subject_type = alternative_approver.value.subject_type
             object_id    = alternative_approver.value.object_id
+            backup       = primary_approver.value.backup
           }
         }
       }
