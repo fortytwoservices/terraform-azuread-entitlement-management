@@ -12,9 +12,9 @@ sections:
 content: |-
   {{ .Header }}
 
-  {{ .Requirements }}
-
   <!-- markdownlint-disable MD013 -->
+
+  {{ .Requirements }}
 
   ## Example
 
