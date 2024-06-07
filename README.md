@@ -257,9 +257,7 @@ The following providers are used by this module:
 
 - azuread (>=2.39.0)
 
-## Modules
 
-No modules.
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -350,10 +348,6 @@ list(object({                         # List of Entitlement Catalogs, one object
     }))
   }))
 ```
-
-## Optional Inputs
-
-No optional inputs.
 
 ## Outputs
 
