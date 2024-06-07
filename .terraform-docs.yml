@@ -22,7 +22,6 @@ content: |-
   {{ include "examples/basic.tf" }}
   ```
 
-
   ### Advanced Example
   <details><summary>Click to expand advanced example</summary>
 
@@ -67,7 +66,7 @@ settings:
   default: true
   description: false
   escape: true
-  hide-empty: true
+  hide-empty: false
   html: false
   indent: 2
   lockfile: true
