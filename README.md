@@ -31,10 +31,11 @@ This is because there is no dedicated API call for force removing Assignments or
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>=1.4.6)
+- terraform (>=1.4.6)
 
-- <a name="requirement_azuread"></a> [azuread](#requirement\_azuread) (>=2.39.0)
+- azuread (>=2.39.0)
 
+<!-- markdownlint-disable MD022 -->
 ## Example
 ### Basic Example
 
@@ -120,6 +121,7 @@ module "elm" {
   ]
 }
 ```
+
 
 ### Advanced Example
 <details><summary>Click to expand advanced example</summary>
@@ -247,12 +249,13 @@ module "elm" {
   ```
 
 </blockquote></details>
+<!-- markdownlint-enable -->
 
 ## Providers
 
 The following providers are used by this module:
 
-- <a name="provider_azuread"></a> [azuread](#provider\_azuread) (>=2.39.0)
+- azuread (>=2.39.0)
 
 ## Modules
 
@@ -263,7 +266,7 @@ No modules.
 
 The following input variables are required:
 
-### <a name="input_entitlement_catalogs"></a> [entitlement\_catalogs](#input\_entitlement\_catalogs)
+### entitlement\_catalogs
 
 Description: A nested list of objects describing Access Packages, it's parent Catalogs, Assignment Policies and associated resources
 
@@ -356,27 +359,27 @@ No optional inputs.
 
 The following outputs are exported:
 
-### <a name="output_entitlement_catalogs"></a> [entitlement\_catalogs](#output\_entitlement\_catalogs)
+### entitlement\_catalogs
 
 Description: Outputs all Entitlement Catalogs created through this module
 
-### <a name="output_access_packages"></a> [access\_packages](#output\_access\_packages)
+### access\_packages
 
 Description: Outputs all Access Packages created through this module
 
-### <a name="output_assignment_policies"></a> [assignment\_policies](#output\_assignment\_policies)
+### assignment\_policies
 
 Description: Outputs all Access Package Assignment Policies created through this module
 
-### <a name="output_resource_catalog_associations"></a> [resource\_catalog\_associations](#output\_resource\_catalog\_associations)
+### resource\_catalog\_associations
 
 Description: Outputs all Resources associated with the Entitlement Catalogs
 
-### <a name="output_resource_access_package_associations"></a> [resource\_access\_package\_associations](#output\_resource\_access\_package\_associations)
+### resource\_access\_package\_associations
 
 Description: Outputs all Resources associated with the Access Packages
-
 <!-- markdownlint-enable -->
+
 ## Resources
 
 The following resources are used by this module:

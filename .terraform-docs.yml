@@ -67,7 +67,7 @@ settings:
   default: true
   description: false
   escape: true
-  hide-empty: false
+  hide-empty: true
   html: false
   indent: 2
   lockfile: true
