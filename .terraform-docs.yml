@@ -12,20 +12,18 @@ sections:
 content: |-
   {{ .Header }}
 
-  <!-- markdownlint-disable MD013 -->
-
   {{ .Requirements }}
 
+  <!-- markdownlint-disable MD022 -->
   ## Example
-
   ### Basic Example
 
   ```hcl
   {{ include "examples/basic.tf" }}
   ```
 
-  ### Advanced Example
 
+  ### Advanced Example
   <details><summary>Click to expand advanced example</summary>
 
     ```hcl
@@ -33,7 +31,6 @@ content: |-
     ```
 
   </blockquote></details>
-
   <!-- markdownlint-enable -->
 
   {{ .Providers }}
@@ -44,8 +41,8 @@ content: |-
   {{ .Inputs }}
 
   {{ .Outputs }}
-
   <!-- markdownlint-enable -->
+
   {{ .Resources }}
 
 output:
@@ -65,13 +62,13 @@ sort:
   by: name
 
 settings:
-  anchor: true
+  anchor: false
   color: true
   default: true
   description: false
   escape: true
   hide-empty: false
-  html: true
+  html: false
   indent: 2
   lockfile: true
   read-comments: true
