@@ -15,6 +15,7 @@ content: |-
   {{ .Requirements }}
 
   <!-- markdownlint-disable MD022 -->
+  <!-- markdownlint-disable MD033 -->
   ## Example
   ### Basic Example
 
