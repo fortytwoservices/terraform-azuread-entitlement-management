@@ -1,6 +1,19 @@
 # This example contains a typical, basic deployment of an Entitlement Catalog, with an Access Package, an Assignment Policy, and AzureAD Groups used as resources.
 # Most of the parameters and inputs are left to their default values, as they are typically the correct values in a common deployment.
-# Refer to the [documentation](https://github.com/amestofortytwo/terraform-azuread-entitlement-management) for all available input parameters.
+# Refer to the [documentation](https://github.com/fortytwoservices/terraform-azuread-entitlement-management) for all available input parameters.
+
+###   Terraform Providers
+############################
+terraform {
+  required_version = ">=1.4.6"
+
+  required_providers {
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = ">=2.39.0"
+    }
+  }
+}
 
 ###   Azure AD Groups
 ########################
@@ -21,20 +34,26 @@ resource "azuread_group" "elm_groups" {
 ###   Azure AD Entitlement Management
 ########################################
 module "elm" {
-  source = "git@github.com:amestofortytwo/terraform-azuread-entitlement-management"
+  source  = "fortytwoservices/entitlement-management/azuread"
+  version = "2.0.0"
 
   entitlement_catalogs = [                      # A list of Entitlement Catalogs, one object per Catalog
     {                                           #
       display_name = "${local.prefix}-catalog1" # Pretty Display Name for the Catalog
       description  = "ELM test catalog1"        # Description of the Catalog
 
-      access_packages = [                                                                     # List of Access Packages, one object for each Access Package
-        {                                                                                     #
-          display_name                  = "${local.prefix}-access_package1"                   # Pretty Display Name for the Access Package
-          description                   = "ELM test access package1"                          # Description of the Access Package
-          duration_in_days              = 30                                                  # How many days the assignment is valid for. Conflicts with "expiration_date"
-          primary_approver_subject_type = "groupMembers"                                      # Specifies the type of user. singleUser, groupMembers, connectedOrganizationMembers, requestorManager, internalSponsors, or externalSponsors
-          primary_approver_object_id    = azuread_group.elm_groups["elm_approvers"].object_id # Object ID of the Primary Approver(s)
+      access_packages = [                                      # List of Access Packages, one object for each Access Package
+        {                                                      #
+          display_name     = "${local.prefix}-access_package1" # Pretty Display Name for the Access Package
+          description      = "ELM test access package1"        # Description of the Access Package
+          duration_in_days = 30                                # How many days the assignment is valid for. Conflicts with "expiration_date"
+
+          primary_approvers = [
+            {
+              subject_type = "groupMembers"
+              object_id    = azuread_group.elm_groups["elm_approvers"].object_id # Object ID of the Primary Approver(s)
+            }
+          ]
 
           assignment_review_settings = { # Review block that specifies how approvals is handled
             enabled = true               # Whether the assignment should be enabled or not. Defaults to true

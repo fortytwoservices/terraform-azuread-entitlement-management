@@ -31,12 +31,17 @@ variable "entitlement_catalogs" {
       approver_justification_required     = optional(bool, false) # Whether an approver must provide a justification for their decision. Defaults to "false"
       alternative_approval_enabled        = optional(bool, false) # Whether alternative approvers are enabled. Defaults to false
       enable_alternative_approval_in_days = optional(number)      # Number of days before the request is forwarded to alternative approvers
-      primary_approver_subject_type       = optional(string)      # Specifies the type of user. singleUser, groupMembers, connectedOrganizationMembers, requestorManager, internalSponsors, or externalSponsors
-      primary_approver_object_id          = optional(string)      # Object ID of the Primary Approver(s)
+
+      primary_approvers = optional(list(object({ # A list of objects, with one object for each Primary Approver
+        subject_type = string                    # Specifies the type of user. singleUser, groupMembers, connectedOrganizationMembers, requestorManager, internalSponsors, or externalSponsors
+        object_id    = string                    # Object ID of the Primary Approver
+        backup       = optional(bool, false)     # For a user in an approval stage, this property indicates whether the user is a backup fallback appover
+      })))
 
       alternative_approvers = optional(list(object({
-        subject_type = string # Type of approver. "singleUser", "groupMembers", "connectedOrganizationMembers", "requestorManager", "internalSponsors", "externalSponsors"
-        object_id    = string # Object ID of the Primary Approver(s)
+        subject_type = string                # Type of approver. "singleUser", "groupMembers", "connectedOrganizationMembers", "requestorManager", "internalSponsors", "externalSponsors"
+        object_id    = string                # Object ID of the Primary Approver(s)
+        backup       = optional(bool, false) # For a user in an approval stage, this property indicates whether the user is a backup fallback appover
       })))
 
       assignment_review_settings = optional(object({
