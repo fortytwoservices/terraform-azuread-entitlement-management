@@ -40,14 +40,14 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
 
   requestor_settings {
     requests_accepted = each.value.requests_accepted
-    scope_type        = each.value.requestor == null ? each.value.scope_type : (each.value.scope_type == "AllExistingDirectoryMemberUsers" ? "SpecificDirectorySubjects" : each.value.scope_type)
+    scope_type        = each.value.scope_type
 
     dynamic "requestor" {
       for_each = toset(each.value.requestor != null ? [1] : [])
 
       content {
-        object_id    = each.value.requestor.object_id
-        subject_type = each.value.requestor.subject_type
+        object_id    = each.value.requestor_settings.requestor.object_id
+        subject_type = each.value.requestor_settings.requestor.subject_type
       }
     }
   }
