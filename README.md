@@ -290,10 +290,19 @@ list(object({                         # List of Entitlement Catalogs, one object
       scope_type        = optional(string, "AllExistingDirectoryMemberUsers") # Specifies the scopes of the requestors. AllConfiguredConnectedOrganizationSubjects, AllExistingConnectedOrganizationSubjects, AllExistingDirectoryMemberUsers, AllExistingDirectorySubjects, AllExternalSubjects, NoSubjects, SpecificConnectedOrganizationSubjects, or SpecificDirectorySubjects Defaults to "AllExistingDirectoryMemberUsers".
 
       # Specified requestor requires scope_type SpecificDirectorySubjects or SpecificConnectedOrganizationSubjects. Defaults to SpecificDirectorySubjects.
-      requestor = optional(object({     # A block specifying the users who are allowed to request on this policy
-        subject_type = optional(string) # Type of requestor. "singleUser", "groupMembers", "connectedOrganizationMembers", "requestorManager", "internalSponsors", "externalSponsors"
-        object_id    = optional(string) # Object ID of the requestor(s)
-      }))
+      requestor_settings = optional(object({ # A block specifying the users who are allowed to request on this policy
+        requests_accepted = optional(bool)   # Whether to accept requests using tis policy. When false, no new requests can be made using this policy.
+        scope_type        = optional(string) # A Specifies the scope of the requestors. Valid values are AllConfiguredConnectedOrganizationSubjects, AllExistingConnectedOrganizationSubjects, AllExistingDirectoryMemberUsers, AllExistingDirectorySubjects, AllExternalSubjects, NoSubjects, SpecificConnectedOrganizationSubjects, or SpecificDirectorySubjects.
+
+        requestor = optional(object({
+          subject_type = string           # Specifies the type of users. Valid values are singleUser, groupMembers, connectedOrganizationMembers, requestorManager, internalSponsors or externalSponsors
+          object_id    = optional(string) # The ID of the subject
+        }))
+        }),
+        {
+          subject_type = "AllExistingDirectoryMemberUsers" # Defaults the requestor_settings value to use AllExistingDirectoryMemberUsers.
+        }
+      )
 
       approval_required                   = optional(bool, true)  # Whether an approval is required. true, false. Defaults to true
       approval_required_for_extension     = optional(bool, false) # Whether approval is required to grant extension. Same approval settings used to approve initial access will apply. true, false. Defaults to false
