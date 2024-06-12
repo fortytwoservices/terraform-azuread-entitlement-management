@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/compare/v1.0.2...v2.0.0) (2024-06-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* updated requestor_settings input block to better reflect the actual terraform resource and possible attributes. Also updated the default values for requestor_settings and how they are referenced which cleaned up the code a bit.
+
+### Bug Fixes
+
+* updated requestor_settings input block to better reflect the actual terraform resource and possible attributes. Also updated the default values for requestor_settings and how they are referenced which cleaned up the code a bit. ([d111843](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/d1118439b456253e6dbd12456fe0e3ae73676c9e))
+
 ## [1.0.2](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/compare/v1.0.1...v1.0.2) (2024-05-31)
 
 
