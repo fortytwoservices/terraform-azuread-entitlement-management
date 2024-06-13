@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/compare/v2.0.0...v2.0.1) (2024-06-13)
+
+
+### Bug Fixes
+
+* fixed broken for_each reference after restructuring the requestor_settings block ([353ca49](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/353ca49e4e0b688370515b2f6f8715452117e89c))
+
 ## [2.0.0](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/compare/v1.0.2...v2.0.0) (2024-06-12)
 
 
