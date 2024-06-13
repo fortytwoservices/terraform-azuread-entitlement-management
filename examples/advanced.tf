@@ -67,10 +67,15 @@ module "elm" {
             }
           ]
 
-          requestor = {                                                         # A block specifying the users who are allowed to request on this policy
-            subject_type = "groupMembers"                                       # Type of requestor. "singleUser", "groupMembers", "connectedOrganizationMembers",
-            object_id    = azuread_group.elm_groups["elm_requestors"].object_id # Object ID of the requestor(s)
-          }                                                                     # "requestorManager", "internalSponsors", "externalSponsors"
+          requestor_settings = {
+            requests_accepted = true                              # Whether to accept requests using this policy. When false, no new requests can be made using this policy.
+            scope_type        = "AllExistingDirectoryMemberUsers" # A Specifies the scope of the requestors. Valid values are AllConfiguredConnectedOrganizationSubjects, AllExistingConnectedOrganizationSubjects, AllExistingDirectoryMemberUsers, AllExistingDirectorySubjects, AllExternalSubjects, NoSubjects, SpecificConnectedOrganizationSubjects, or SpecificDirectorySubjects.
+
+            requestor = {
+              subject_type = "groupMembers"
+              object_id    = "00000-00000-00000-00000" # The ID of the subject
+            }
+          }
 
           assignment_review_settings = { # Review block that specifies how approvals is handled
             enabled = true               # Whether the assignment should be enabled or not. Defaults to true
