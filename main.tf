@@ -43,7 +43,7 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
     scope_type        = each.value.scope_type
 
     dynamic "requestor" {
-      for_each = toset(each.value.requestor != null ? [1] : [])
+      for_each = toset(try(each.value.requestor_settings.requestor, null) != null ? [1] : [])
 
       content {
         object_id    = each.value.requestor_settings.requestor.object_id
