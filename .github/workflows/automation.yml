@@ -1,45 +1,40 @@
 name: Automation
 on:
-  issues:
-    types: [ "opened" ]
   pull_request:
-    types: [ "opened" ]
+    paths: [ "**.tf", "**.md"]
   push:
     branches: [ "main" ]
-    paths: [ "**.tf", "CHANGELOG.md"]
+    paths: [ "**.tf", "**.md"]
 
-permissions:
-  pull-requests: write
-  contents: write
+permissions: read-all
 
 jobs:
-  update-readme:
-    if: github.event_name == 'pull_request'
-    name: Update README for changed modules
+  check-tfdocs:
+    if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
+    name: Check README with Terraform Docs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
         with:
-          fetch-depth: 2
           ref: ${{ github.event.pull_request.head.ref }}
       - name: Render terraform docs and push changes back to PR
         uses: terraform-docs/gh-actions@e47bfa196e79fa50987ef391be236d9d97b0c786 # v1.2.0
         with:
           working-dir: .
-          git-push: "true"
-          git-push-sign-off: "true"
           config-file: ".terraform-docs.yml"
-          git-push-user-email: "41898282+github-actions[bot]@users.noreply.github.com"
-          git-push-user-name: "github-actions[bot]"
+          fail-on-diff: true
+          output-format: ""
+          output-method: ""
+          template: ""
 
   terraform:
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.actor != 'dependabot[bot]')
     name: Terraform checks
     runs-on: ubuntu-latest
     steps:
       - name: Clone repo
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v.4.1.6
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
       - name: Terraform
         run: terraform fmt -check -recursive
 
@@ -47,10 +42,11 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     needs: terraform
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
-      - uses: google-github-actions/release-please-action@e4dc86ba9405554aeba3c6bb2d169500e7d3b4ee # v4.1.1
+      - uses: googleapis/release-please-action@7987652d64b4581673a76e33ad5e98e3dd56832f # v4.1.3
         with:
           token: ${{ secrets.MARVIN_PAT }}
           release-type: terraform-module
-          signoff: "Marvin <117985362+4t2-marvin@users.noreply.github.com>"
-          #prerelease: true
