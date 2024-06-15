@@ -1,48 +1,37 @@
 version: ">= 0.15.0"
 
-formatter: "markdown document"
+formatter: markdown
 
-header-from: readme-header.md
+header-from: main.tf
 footer-from: ""
 
 sections:
   hide: []
   show: []
+  
+
+  hide-all: false
+  show-all: true
 
 content: |-
   {{ .Header }}
 
   {{ .Requirements }}
 
-  <!-- markdownlint-disable MD022 -->
-  <!-- markdownlint-disable MD033 -->
   ## Example
-  ### Basic Example
 
   ```hcl
-  {{ include "examples/basic.tf" }}
+  {{ include "examples/main.tf" }}
   ```
 
-  ### Advanced Example
-  <details><summary>Click to expand advanced example</summary>
-
-    ```hcl
-    {{ include "examples/advanced.tf" }}
-    ```
-
-  </blockquote></details>
-  <!-- markdownlint-enable -->
-
   {{ .Providers }}
-
+  
   {{ .Modules }}
 
-  <!-- markdownlint-disable MD013 -->
   {{ .Inputs }}
-
+  
   {{ .Outputs }}
-  <!-- markdownlint-enable -->
-
+  
   {{ .Resources }}
 
 output:
@@ -58,20 +47,19 @@ output-values:
   from: ""
 
 sort:
-  enabled: false
+  enabled: true
   by: name
 
 settings:
-  anchor: false
+  anchor: true
   color: true
   default: true
   description: false
   escape: true
   hide-empty: false
-  html: false
+  html: true
   indent: 2
   lockfile: true
-  read-comments: true
   required: true
   sensitive: true
   type: true
