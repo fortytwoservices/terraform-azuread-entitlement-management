@@ -2,8 +2,8 @@ version: ">= 0.15.0"
 
 formatter: "markdown document"
 
-header-from: readme-header.md
-footer-from: ""
+header-from: "_README_header.md"
+footer-from: "_README_footer.md"
 
 sections:
   hide: []
@@ -12,38 +12,36 @@ sections:
 content: |-
   {{ .Header }}
 
+  <!-- markdownlint-disable MD033 -->
   {{ .Requirements }}
 
-  <!-- markdownlint-disable MD022 -->
-  <!-- markdownlint-disable MD033 -->
-  ## Example
-  ### Basic Example
+  ## Examples
+
+  ### Basic example
 
   ```hcl
-  {{ include "examples/basic.tf" }}
+  {{ include "examples/basic/main.tf" }}
   ```
 
   ### Advanced Example
-  <details><summary>Click to expand advanced example</summary>
 
-    ```hcl
-    {{ include "examples/advanced.tf" }}
-    ```
-
-  </blockquote></details>
-  <!-- markdownlint-enable -->
+  ```hcl
+  {{ include "examples/advanced/main.tf" }}
+  ```
 
   {{ .Providers }}
 
-  {{ .Modules }}
+  {{ .Resources }}
 
   <!-- markdownlint-disable MD013 -->
   {{ .Inputs }}
-
+  
   {{ .Outputs }}
-  <!-- markdownlint-enable -->
 
-  {{ .Resources }}
+
+  {{ .Modules }}
+
+  {{ .Footer }}
 
 output:
   file: "README.md"
@@ -58,8 +56,8 @@ output-values:
   from: ""
 
 sort:
-  enabled: false
-  by: name
+  enabled: true
+  by: required
 
 settings:
   anchor: false
