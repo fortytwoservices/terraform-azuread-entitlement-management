@@ -29,7 +29,7 @@ variable "entitlement_catalogs" {
         }))
         }),
         {
-          subject_type = "AllExistingDirectoryMemberUsers" # Defaults the requestor_settings value to use AllExistingDirectoryMemberUsers.
+          scope_type = "AllExistingDirectoryMemberUsers" # Defaults the requestor_settings value to use AllExistingDirectoryMemberUsers.
         }
       )
 
