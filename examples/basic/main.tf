@@ -15,7 +15,7 @@ terraform {
   }
 }
 
-###   Azure AD Groups
+###   Entra ID Groups
 ########################
 locals {
   ad_groups = [
@@ -30,8 +30,7 @@ resource "azuread_group" "elm_groups" {
   security_enabled = true
 }
 
-
-###   Azure AD Entitlement Management
+###   Entra Entitlement Management
 ########################################
 module "elm" {
   source  = "fortytwoservices/entitlement-management/azuread"

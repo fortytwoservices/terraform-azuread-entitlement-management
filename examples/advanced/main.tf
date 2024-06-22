@@ -32,8 +32,7 @@ resource "azuread_group" "elm_groups" {
   security_enabled = true
 }
 
-
-###   Azure AD Entitlement Management
+###   Entra Entitlement Management
 ########################################
 module "elm" {
   source  = "fortytwoservices/entitlement-management/azuread"
