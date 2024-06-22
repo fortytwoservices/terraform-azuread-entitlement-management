@@ -25,9 +25,13 @@ content: |-
 
   ### Advanced Example
 
+  <details><summary>Click to expand advanced example</summary>
+
   ```hcl
   {{ include "examples/advanced/main.tf" }}
   ```
+
+  </blockquote></details>
 
   {{ .Providers }}
 

@@ -27,6 +27,7 @@ Complete list of all Terraform resources deployed is provided at the bottom of t
 At the time of writing, there is a hard dependency from the Microsoft Azure API that requires all Assignments of the Access Package to be removed before you are allowed to destroy it.
 This is because there is no dedicated API call for force removing Assignments or the Access Package itself. After all Assignments have been deleted, you should be able to destroy all resources created by this module.
 
+<!-- markdownlint-disable MD033 -->
 ## Requirements
 
 The following requirements are needed by this module:
@@ -35,10 +36,9 @@ The following requirements are needed by this module:
 
 - azuread (>=2.39.0)
 
-<!-- markdownlint-disable MD022 -->
-<!-- markdownlint-disable MD033 -->
-## Example
-### Basic Example
+## Examples
+
+### Basic example
 
 ```hcl
 # This example contains a typical, basic deployment of an Entitlement Catalog, with an Access Package, an Assignment Policy, and AzureAD Groups used as resources.
@@ -124,10 +124,11 @@ module "elm" {
 ```
 
 ### Advanced Example
+
 <details><summary>Click to expand advanced example</summary>
 
-  ```hcl
-  # This example contains a more advanced deployment of an Entitlement Catalog, with an Access Package, an Assignment Policy, and AzureAD Groups used as resources, specific requestors, additional justification etc.
+```hcl
+# This example contains a more advanced deployment of an Entitlement Catalog, with an Access Package, an Assignment Policy, and AzureAD Groups used as resources, specific requestors, additional justification etc.
 # Most of the parameters and inputs are left to their default values, as they are typically the correct values in a common deployment.
 # Refer to the [documentation](https://github.com/fortytwoservices/terraform-azuread-entitlement-management) for all available input parameters.
 
@@ -196,10 +197,15 @@ module "elm" {
             }
           ]
 
-          requestor = {                                                         # A block specifying the users who are allowed to request on this policy
-            subject_type = "groupMembers"                                       # Type of requestor. "singleUser", "groupMembers", "connectedOrganizationMembers",
-            object_id    = azuread_group.elm_groups["elm_requestors"].object_id # Object ID of the requestor(s)
-          }                                                                     # "requestorManager", "internalSponsors", "externalSponsors"
+          requestor_settings = {
+            requests_accepted = true                              # Whether to accept requests using this policy. When false, no new requests can be made using this policy.
+            scope_type        = "AllExistingDirectoryMemberUsers" # A Specifies the scope of the requestors. Valid values are AllConfiguredConnectedOrganizationSubjects, AllExistingConnectedOrganizationSubjects, AllExistingDirectoryMemberUsers, AllExistingDirectorySubjects, AllExternalSubjects, NoSubjects, SpecificConnectedOrganizationSubjects, or SpecificDirectorySubjects.
+
+            requestor = {
+              subject_type = "groupMembers"
+              object_id    = "00000-00000-00000-00000" # The ID of the subject
+            }
+          }
 
           assignment_review_settings = { # Review block that specifies how approvals is handled
             enabled = true               # Whether the assignment should be enabled or not. Defaults to true
@@ -246,10 +252,9 @@ module "elm" {
     }
   ]
 }
-  ```
+```
 
 </blockquote></details>
-<!-- markdownlint-enable -->
 
 ## Providers
 
@@ -257,9 +262,15 @@ The following providers are used by this module:
 
 - azuread (>=2.39.0)
 
-## Modules
+## Resources
 
-No modules.
+The following resources are used by this module:
+
+- [azuread_access_package.access-packages](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package) (resource)
+- [azuread_access_package_assignment_policy.assignment_policies](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_assignment_policy) (resource)
+- [azuread_access_package_catalog.entitlement-catalogs](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_catalog) (resource)
+- [azuread_access_package_resource_catalog_association.resource-catalog-associations](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_resource_catalog_association) (resource)
+- [azuread_access_package_resource_package_association.resource-access-package-associations](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_resource_package_association) (resource)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -291,7 +302,7 @@ list(object({                         # List of Entitlement Catalogs, one object
 
       # Specified requestor requires scope_type SpecificDirectorySubjects or SpecificConnectedOrganizationSubjects. Defaults to SpecificDirectorySubjects.
       requestor_settings = optional(object({ # A block specifying the users who are allowed to request on this policy
-        requests_accepted = optional(bool)   # Whether to accept requests using tis policy. When false, no new requests can be made using this policy.
+        requests_accepted = optional(bool)   # Whether to accept requests using this policy. When false, no new requests can be made using this policy.
         scope_type        = optional(string) # A Specifies the scope of the requestors. Valid values are AllConfiguredConnectedOrganizationSubjects, AllExistingConnectedOrganizationSubjects, AllExistingDirectoryMemberUsers, AllExistingDirectorySubjects, AllExternalSubjects, NoSubjects, SpecificConnectedOrganizationSubjects, or SpecificDirectorySubjects.
 
         requestor = optional(object({
@@ -300,7 +311,7 @@ list(object({                         # List of Entitlement Catalogs, one object
         }))
         }),
         {
-          subject_type = "AllExistingDirectoryMemberUsers" # Defaults the requestor_settings value to use AllExistingDirectoryMemberUsers.
+          scope_type = "AllExistingDirectoryMemberUsers" # Defaults the requestor_settings value to use AllExistingDirectoryMemberUsers.
         }
       )
 
@@ -368,10 +379,6 @@ No optional inputs.
 
 The following outputs are exported:
 
-### entitlement\_catalogs
-
-Description: Outputs all Entitlement Catalogs created through this module
-
 ### access\_packages
 
 Description: Outputs all Access Packages created through this module
@@ -380,22 +387,21 @@ Description: Outputs all Access Packages created through this module
 
 Description: Outputs all Access Package Assignment Policies created through this module
 
-### resource\_catalog\_associations
+### entitlement\_catalogs
 
-Description: Outputs all Resources associated with the Entitlement Catalogs
+Description: Outputs all Entitlement Catalogs created through this module
 
 ### resource\_access\_package\_associations
 
 Description: Outputs all Resources associated with the Access Packages
-<!-- markdownlint-enable -->
 
-## Resources
+### resource\_catalog\_associations
 
-The following resources are used by this module:
+Description: Outputs all Resources associated with the Entitlement Catalogs
 
-- [azuread_access_package.access-packages](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package) (resource)
-- [azuread_access_package_assignment_policy.assignment_policies](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_assignment_policy) (resource)
-- [azuread_access_package_catalog.entitlement-catalogs](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_catalog) (resource)
-- [azuread_access_package_resource_catalog_association.resource-catalog-associations](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_resource_catalog_association) (resource)
-- [azuread_access_package_resource_package_association.resource-access-package-associations](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_resource_package_association) (resource)
+
+## Modules
+
+No modules.
+
 <!-- END_TF_DOCS -->
