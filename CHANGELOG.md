@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.1.0](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/compare/v2.0.1...v2.1.0) (2024-06-18)
+
+
+### Features
+
+* updated configuration for tfdocs and updated readme ([55684f6](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/55684f63cc38e757b9b65c23409a0e54de94a227))
+
+
+### Bug Fixes
+
+* fixed readme file names ([b66089d](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/b66089da7f09e8180f3a8768f66567cb24a4a47b))
+* grept apply ([dddace1](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/dddace190fd7d77b435a1ccaeb0a7fbfedcf33d4))
+* updated default behaviour of requsetor_settings to specify the correct parameter. ([558c0c3](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/558c0c3330defd3119035decd1562bf987f0b7fc))
+
 ## [2.0.1](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/compare/v2.0.0...v2.0.1) (2024-06-13)
 
 

@@ -163,8 +163,10 @@ module "elm" {
 
 ### Advanced Example
 
+<details><summary>Click to expand advanced example</summary>
+
 ```hcl
-# This example contains a typical, basic deployment of an Entitlement Catalog, with an Access Package, an Assignment Policy, and AzureAD Groups used as resources.
+# This example contains a more advanced deployment of an Entitlement Catalog, with an Access Package, an Assignment Policy, and AzureAD Groups used as resources, specific requestors, additional justification etc.
 # Most of the parameters and inputs are left to their default values, as they are typically the correct values in a common deployment.
 # Refer to the [documentation](https://github.com/fortytwoservices/terraform-azuread-entitlement-management) for all available input parameters.
 
@@ -221,6 +223,23 @@ module "elm" {
             }
           ]
 
+          alternative_approvers = [                                                          # List of Alternative Approvers, one object per approver
+            {                                                                                #
+              subject_type = "groupMembers"                                                  # # Type of approver. "singleUser", "groupMembers", "connectedOrganizationMembers", "requestorManager", "internalSponsors", "externalSponsors"
+              object_id    = azuread_group.elm_groups["elm_alternative_approvers"].object_id # Object ID of the Primary Approver(s)
+            }
+          ]
+
+          requestor_settings = {
+            requests_accepted = true                              # Whether to accept requests using this policy. When false, no new requests can be made using this policy.
+            scope_type        = "AllExistingDirectoryMemberUsers" # A Specifies the scope of the requestors. Valid values are AllConfiguredConnectedOrganizationSubjects, AllExistingConnectedOrganizationSubjects, AllExistingDirectoryMemberUsers, AllExistingDirectorySubjects, AllExternalSubjects, NoSubjects, SpecificConnectedOrganizationSubjects, or SpecificDirectorySubjects.
+
+            requestor = {
+              subject_type = "groupMembers"
+              object_id    = "00000-00000-00000-00000" # The ID of the subject
+            }
+          }
+
           assignment_review_settings = { # Review block that specifies how approvals is handled
             enabled = true               # Whether the assignment should be enabled or not. Defaults to true
 
@@ -245,6 +264,8 @@ module "elm" {
   ]
 }
 ```
+
+</blockquote></details>
 
 ## Providers
 
@@ -292,7 +313,7 @@ list(object({                         # List of Entitlement Catalogs, one object
 
       # Specified requestor requires scope_type SpecificDirectorySubjects or SpecificConnectedOrganizationSubjects. Defaults to SpecificDirectorySubjects.
       requestor_settings = optional(object({ # A block specifying the users who are allowed to request on this policy
-        requests_accepted = optional(bool)   # Whether to accept requests using tis policy. When false, no new requests can be made using this policy.
+        requests_accepted = optional(bool)   # Whether to accept requests using this policy. When false, no new requests can be made using this policy.
         scope_type        = optional(string) # A Specifies the scope of the requestors. Valid values are AllConfiguredConnectedOrganizationSubjects, AllExistingConnectedOrganizationSubjects, AllExistingDirectoryMemberUsers, AllExistingDirectorySubjects, AllExternalSubjects, NoSubjects, SpecificConnectedOrganizationSubjects, or SpecificDirectorySubjects.
 
         requestor = optional(object({
@@ -301,7 +322,7 @@ list(object({                         # List of Entitlement Catalogs, one object
         }))
         }),
         {
-          subject_type = "AllExistingDirectoryMemberUsers" # Defaults the requestor_settings value to use AllExistingDirectoryMemberUsers.
+          scope_type = "AllExistingDirectoryMemberUsers" # Defaults the requestor_settings value to use AllExistingDirectoryMemberUsers.
         }
       )
 
