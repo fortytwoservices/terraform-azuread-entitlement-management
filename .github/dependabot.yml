@@ -1,10 +1,21 @@
+---
 version: 2
 updates:
   - package-ecosystem: "github-actions"
+    rebase-strategy: disabled
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      actions:
+        patterns: 
+          - '*'
   - package-ecosystem: "terraform"
+    rebase-strategy: disabled
     directory: "/" # Location of package manifests
+    groups:
+      terraform:
+        patterns: 
+          - '*'
     schedule:
       interval: "daily"
