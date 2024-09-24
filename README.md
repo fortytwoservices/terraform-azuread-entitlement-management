@@ -1,7 +1,11 @@
 <!-- BEGIN_TF_DOCS -->
-# Terraform Module - Entra ID Governance - Entitlement Management
+# Terraform Module - Entra ID Entitlement Management
 
-This module allows you to simply deploy and manage Entitlement Management resources in Entra ID Governance.
+| :exclamation:  NB! |
+|---|
+| Due to the renaming of Company, the Github organization has changed name from "amestofortytwo" to "fortytwoservices". Pre-existing Terraform code would need to change that in code. |
+
+This module allows you to simply deploy and manage Entitlement Management resources in Entra Identity Governance.
 
 The input to the module is based on Access Packages, but the information is used to create both Catalogs, Access Packages, Assignment Policies and assigning resources to both the Catalogs and Access Packages.
 
@@ -31,16 +35,16 @@ This is because there is no dedicated API call for force removing Assignments or
 
 The following requirements are needed by this module:
 
-- terraform (>=1.4.6)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>=1.4.6)
 
-- azuread (>=2.39.0)
+- <a name="requirement_azuread"></a> [azuread](#requirement\_azuread) (>=2.39.0)
 
 ## Examples
 
 ### Basic example
 
 ```hcl
-# This example contains a more advanced deployment of an Entitlement Catalog, with an Access Package, an Assignment Policy, and AzureAD Groups used as resources, specific requestors, additional justification etc.
+# This example contains a typical, basic deployment of an Entitlement Catalog, with an Access Package, an Assignment Policy, and AzureAD Groups used as resources.
 # Most of the parameters and inputs are left to their default values, as they are typically the correct values in a common deployment.
 # Refer to the [documentation](https://github.com/fortytwoservices/terraform-azuread-entitlement-management) for all available input parameters.
 
@@ -61,10 +65,8 @@ terraform {
 ########################
 locals {
   ad_groups = [
-    "elm_requestors",            # Entra ID Group whose members are allowed to request access
-    "elm_approvers",             # Entra ID Group whose members are allowed to approve Access Package requests
-    "elm_alternative_approvers", # Entra ID Group whose members are alternative approvers of Access Package Requests
-    "elm_approved"               # Entra ID Group that users will become member of when access request is approved
+    "elm_approvers", # Azure AD Group whose members are allowed to approve Access Package requests
+    "elm_approved"   # Azure AD Group that users will become member of when access request is approved
   ]
 }
 
@@ -74,8 +76,93 @@ resource "azuread_group" "elm_groups" {
   security_enabled = true
 }
 
+###   Entra Entitlement Management
+########################################
+module "elm" {
+  source  = "fortytwoservices/entitlement-management/azuread"
+  version = "2.0.0"
 
-###   Entra ID Entitlement Management
+  entitlement_catalogs = [                      # A list of Entitlement Catalogs, one object per Catalog
+    {                                           #
+      display_name = "${local.prefix}-catalog1" # Pretty Display Name for the Catalog
+      description  = "ELM test catalog1"        # Description of the Catalog
+
+      access_packages = [                                      # List of Access Packages, one object for each Access Package
+        {                                                      #
+          display_name     = "${local.prefix}-access_package1" # Pretty Display Name for the Access Package
+          description      = "ELM test access package1"        # Description of the Access Package
+          duration_in_days = 30                                # How many days the assignment is valid for. Conflicts with "expiration_date"
+
+          primary_approvers = [
+            {
+              subject_type = "groupMembers"
+              object_id    = azuread_group.elm_groups["elm_approvers"].object_id # Object ID of the Primary Approver(s)
+            }
+          ]
+
+          assignment_review_settings = { # Review block that specifies how approvals is handled
+            enabled = true               # Whether the assignment should be enabled or not. Defaults to true
+
+            reviewers = [                                                          # List of reviewers. One object per reviewer
+              {                                                                    #
+                subject_type = "groupMembers"                                      # Type of reviewer. "singleUser", "groupMembers", "connectedOrganizationMembers", "requestorManager", "internalSponsors", "externalSponsors"
+                object_id    = azuread_group.elm_groups["elm_approvers"].object_id # Object ID of the reviewer
+              }
+            ]
+          }
+
+          resources = [ # List of resources, one resource per object
+            {
+              display_name           = azuread_group.elm_groups["elm_approved"].display_name # Descriptive display name to be used for the Terraform Resource key
+              resource_origin_system = "AadGroup"                                            # The type of resource in the origin system. "SharePointOnline", "AadApplication", "AadGroup"
+              resource_origin_id     = azuread_group.elm_groups["elm_approved"].object_id    # The ID of the Azure resource to be added to the Catalog and Access Package
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Advanced Example
+
+```hcl
+# This example contains a more advanced deployment of an Entitlement Catalog, with an Access Package, an Assignment Policy, and AzureAD Groups used as resources, specific requestors, additional justification etc.
+# Most of the parameters and inputs are left to their default values, as they are typically the correct values in a common deployment.
+# Refer to the [documentation](https://github.com/fortytwoservices/terraform-azuread-entitlement-management) for all available input parameters.
+
+###   Terraform Providers
+############################
+terraform {
+  required_version = ">=1.4.6"
+
+  required_providers {
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = ">=2.39.0"
+    }
+  }
+}
+
+###   Azure AD Groups
+########################
+locals {
+  ad_groups = [
+    "elm_requestors",            # Azure AD Group whose members are allowed to request access
+    "elm_approvers",             # Azure AD Group whose members are allowed to approve Access Package requests
+    "elm_alternative_approvers", # Azure AD Group whose members are alternative approvers of Access Package Requests
+    "elm_approved"               # Azure AD Group that users will become member of when access request is approved
+  ]
+}
+
+resource "azuread_group" "elm_groups" {
+  for_each         = toset(local.ad_groups)
+  display_name     = each.key
+  security_enabled = true
+}
+
+###   Entra Entitlement Management
 ########################################
 module "elm" {
   source  = "fortytwoservices/entitlement-management/azuread"
@@ -109,10 +196,15 @@ module "elm" {
             }
           ]
 
-          requestor = {                                                         # A block specifying the users who are allowed to request on this policy
-            subject_type = "groupMembers"                                       # Type of requestor. "singleUser", "groupMembers", "connectedOrganizationMembers",
-            object_id    = azuread_group.elm_groups["elm_requestors"].object_id # Object ID of the requestor(s)
-          }                                                                     # "requestorManager", "internalSponsors", "externalSponsors"
+          requestor_settings = {
+            requests_accepted = true                              # Whether to accept requests using this policy. When false, no new requests can be made using this policy.
+            scope_type        = "AllExistingDirectoryMemberUsers" # A Specifies the scope of the requestors. Valid values are AllConfiguredConnectedOrganizationSubjects, AllExistingConnectedOrganizationSubjects, AllExistingDirectoryMemberUsers, AllExistingDirectorySubjects, AllExternalSubjects, NoSubjects, SpecificConnectedOrganizationSubjects, or SpecificDirectorySubjects.
+
+            requestor = {
+              subject_type = "groupMembers"
+              object_id    = "00000-00000-00000-00000" # The ID of the subject
+            }
+          }
 
           assignment_review_settings = { # Review block that specifies how approvals is handled
             enabled = true               # Whether the assignment should be enabled or not. Defaults to true
@@ -161,117 +253,11 @@ module "elm" {
 }
 ```
 
-### Advanced Example
-
-<details><summary>Click to expand advanced example</summary>
-
-```hcl
-# This example contains a more advanced deployment of an Entitlement Catalog, with an Access Package, an Assignment Policy, and AzureAD Groups used as resources, specific requestors, additional justification etc.
-# Most of the parameters and inputs are left to their default values, as they are typically the correct values in a common deployment.
-# Refer to the [documentation](https://github.com/fortytwoservices/terraform-azuread-entitlement-management) for all available input parameters.
-
-###   Terraform Providers
-############################
-terraform {
-  required_version = ">=1.4.6"
-
-  required_providers {
-    azuread = {
-      source  = "hashicorp/azuread"
-      version = ">=2.39.0"
-    }
-  }
-}
-
-###   Entra ID Groups
-########################
-locals {
-  ad_groups = [
-    "elm_approvers", # Entra ID Group whose members are allowed to approve Access Package requests
-    "elm_approved"   # Entra ID Group that users will become member of when access request is approved
-  ]
-}
-
-resource "azuread_group" "elm_groups" {
-  for_each         = toset(local.ad_groups)
-  display_name     = each.key
-  security_enabled = true
-}
-
-
-###   Entra ID Entitlement Management
-########################################
-module "elm" {
-  source  = "fortytwoservices/entitlement-management/azuread"
-  version = "2.0.0"
-
-  entitlement_catalogs = [                      # A list of Entitlement Catalogs, one object per Catalog
-    {                                           #
-      display_name = "${local.prefix}-catalog1" # Pretty Display Name for the Catalog
-      description  = "ELM test catalog1"        # Description of the Catalog
-
-      access_packages = [                                      # List of Access Packages, one object for each Access Package
-        {                                                      #
-          display_name     = "${local.prefix}-access_package1" # Pretty Display Name for the Access Package
-          description      = "ELM test access package1"        # Description of the Access Package
-          duration_in_days = 30                                # How many days the assignment is valid for. Conflicts with "expiration_date"
-
-          primary_approvers = [
-            {
-              subject_type = "groupMembers"
-              object_id    = azuread_group.elm_groups["elm_approvers"].object_id # Object ID of the Primary Approver(s)
-            }
-          ]
-
-          alternative_approvers = [                                                          # List of Alternative Approvers, one object per approver
-            {                                                                                #
-              subject_type = "groupMembers"                                                  # # Type of approver. "singleUser", "groupMembers", "connectedOrganizationMembers", "requestorManager", "internalSponsors", "externalSponsors"
-              object_id    = azuread_group.elm_groups["elm_alternative_approvers"].object_id # Object ID of the Primary Approver(s)
-            }
-          ]
-
-          requestor_settings = {
-            requests_accepted = true                              # Whether to accept requests using this policy. When false, no new requests can be made using this policy.
-            scope_type        = "AllExistingDirectoryMemberUsers" # A Specifies the scope of the requestors. Valid values are AllConfiguredConnectedOrganizationSubjects, AllExistingConnectedOrganizationSubjects, AllExistingDirectoryMemberUsers, AllExistingDirectorySubjects, AllExternalSubjects, NoSubjects, SpecificConnectedOrganizationSubjects, or SpecificDirectorySubjects.
-
-            requestor = {
-              subject_type = "groupMembers"
-              object_id    = "00000-00000-00000-00000" # The ID of the subject
-            }
-          }
-
-          assignment_review_settings = { # Review block that specifies how approvals is handled
-            enabled = true               # Whether the assignment should be enabled or not. Defaults to true
-
-            reviewers = [                                                          # List of reviewers. One object per reviewer
-              {                                                                    #
-                subject_type = "groupMembers"                                      # Type of reviewer. "singleUser", "groupMembers", "connectedOrganizationMembers", "requestorManager", "internalSponsors", "externalSponsors"
-                object_id    = azuread_group.elm_groups["elm_approvers"].object_id # Object ID of the reviewer
-              }
-            ]
-          }
-
-          resources = [ # List of resources, one resource per object
-            {
-              display_name           = azuread_group.elm_groups["elm_approved"].display_name # Descriptive display name to be used for the Terraform Resource key
-              resource_origin_system = "AadGroup"                                            # The type of resource in the origin system. "SharePointOnline", "AadApplication", "AadGroup"
-              resource_origin_id     = azuread_group.elm_groups["elm_approved"].object_id    # The ID of the Azure resource to be added to the Catalog and Access Package
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
-```
-
-</blockquote></details>
-
 ## Providers
 
 The following providers are used by this module:
 
-- azuread (>=2.39.0)
+- <a name="provider_azuread"></a> [azuread](#provider\_azuread) (>=2.39.0)
 
 ## Resources
 
@@ -288,7 +274,7 @@ The following resources are used by this module:
 
 The following input variables are required:
 
-### entitlement\_catalogs
+### <a name="input_entitlement_catalogs"></a> [entitlement\_catalogs](#input\_entitlement\_catalogs)
 
 Description: A nested list of objects describing Access Packages, it's parent Catalogs, Assignment Policies and associated resources
 
@@ -390,26 +376,25 @@ No optional inputs.
 
 The following outputs are exported:
 
-### access\_packages
+### <a name="output_access_packages"></a> [access\_packages](#output\_access\_packages)
 
 Description: Outputs all Access Packages created through this module
 
-### assignment\_policies
+### <a name="output_assignment_policies"></a> [assignment\_policies](#output\_assignment\_policies)
 
 Description: Outputs all Access Package Assignment Policies created through this module
 
-### entitlement\_catalogs
+### <a name="output_entitlement_catalogs"></a> [entitlement\_catalogs](#output\_entitlement\_catalogs)
 
 Description: Outputs all Entitlement Catalogs created through this module
 
-### resource\_access\_package\_associations
+### <a name="output_resource_access_package_associations"></a> [resource\_access\_package\_associations](#output\_resource\_access\_package\_associations)
 
 Description: Outputs all Resources associated with the Access Packages
 
-### resource\_catalog\_associations
+### <a name="output_resource_catalog_associations"></a> [resource\_catalog\_associations](#output\_resource\_catalog\_associations)
 
 Description: Outputs all Resources associated with the Entitlement Catalogs
-
 
 ## Modules
 
