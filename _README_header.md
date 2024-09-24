@@ -1,5 +1,9 @@
 # Terraform Module - Entra ID Entitlement Management
 
+| :exclamation:  NB! |
+|---|
+| Due to the renaming of Company, the Github organization has changed name from "amestofortytwo" to "fortytwoservices". Pre-existing Terraform code would need to change that in code. |
+
 This module allows you to simply deploy and manage Entitlement Management resources in Entra Identity Governance.
 
 The input to the module is based on Access Packages, but the information is used to create both Catalogs, Access Packages, Assignment Policies and assigning resources to both the Catalogs and Access Packages.
