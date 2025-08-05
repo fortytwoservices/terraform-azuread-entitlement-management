@@ -9,19 +9,19 @@ variable "entitlement_catalogs" {
     published          = optional(bool, true)  # If the Access Packages in this catalog are available for management. true, false. Defaults to "true"
 
     access_packages = list(object({
-      display_name      = string                                              # Name of the Access Package
-      description       = optional(string)                                    # Description of the Access Package
-      hidden            = optional(bool, false)                               # If the Access Package should be hidden from the requestor
-      duration_in_days  = optional(number)                                    # How many days the assignment is valid for. Conflicts with "expiration_date"
-      expiration_date   = optional(string)                                    # The date that this assignment expires, in RFC3339 format. Conflicts with "duration_in_days"
-      extension_enabled = optional(bool, true)                                # Whether users will be able to request extension before it expires. true, false. Defaults to true
-      requests_accepted = optional(bool, true)                                # Whether to accept requests using this policy. When false, no new requests can be made using this policy. true, false. Defaults to true
-      scope_type        = optional(string, "AllExistingDirectoryMemberUsers") # Specifies the scopes of the requestors. AllConfiguredConnectedOrganizationSubjects, AllExistingConnectedOrganizationSubjects, AllExistingDirectoryMemberUsers, AllExistingDirectorySubjects, AllExternalSubjects, NoSubjects, SpecificConnectedOrganizationSubjects, or SpecificDirectorySubjects Defaults to "AllExistingDirectoryMemberUsers".
+      display_name      = string                # Name of the Access Package
+      description       = optional(string)      # Description of the Access Package
+      hidden            = optional(bool, false) # If the Access Package should be hidden from the requestor
+      duration_in_days  = optional(number)      # How many days the assignment is valid for. Conflicts with "expiration_date"
+      expiration_date   = optional(string)      # The date that this assignment expires, in RFC3339 format. Conflicts with "duration_in_days"
+      extension_enabled = optional(bool, true)  # Whether users will be able to request extension before it expires. true, false. Defaults to true
+      requests_accepted = optional(bool, true)  # Whether to accept requests using this policy. When false, no new requests can be made using this policy. true, false. Defaults to true
+      scope_type        = optional(string)      # Deprecated! Use the setting in requestor_settings.scope_type. Specifies the scopes of the requestors. AllConfiguredConnectedOrganizationSubjects, AllExistingConnectedOrganizationSubjects, AllExistingDirectoryMemberUsers, AllExistingDirectorySubjects, AllExternalSubjects, NoSubjects, SpecificConnectedOrganizationSubjects, or SpecificDirectorySubjects Defaults to "AllExistingDirectoryMemberUsers".
 
       # Specified requestor requires scope_type SpecificDirectorySubjects or SpecificConnectedOrganizationSubjects. Defaults to SpecificDirectorySubjects.
-      requestor_settings = optional(object({ # A block specifying the users who are allowed to request on this policy
-        requests_accepted = optional(bool)   # Whether to accept requests using this policy. When false, no new requests can be made using this policy.
-        scope_type        = optional(string) # A Specifies the scope of the requestors. Valid values are AllConfiguredConnectedOrganizationSubjects, AllExistingConnectedOrganizationSubjects, AllExistingDirectoryMemberUsers, AllExistingDirectorySubjects, AllExternalSubjects, NoSubjects, SpecificConnectedOrganizationSubjects, or SpecificDirectorySubjects.
+      requestor_settings = optional(object({                                    # A block specifying the users who are allowed to request on this policy
+        requests_accepted = optional(bool)                                      # Whether to accept requests using this policy. When false, no new requests can be made using this policy.
+        scope_type        = optional(string, "AllExistingDirectoryMemberUsers") # A Specifies the scope of the requestors. Valid values are AllConfiguredConnectedOrganizationSubjects, AllExistingConnectedOrganizationSubjects, AllExistingDirectoryMemberUsers, AllExistingDirectorySubjects, AllExternalSubjects, NoSubjects, SpecificConnectedOrganizationSubjects, or SpecificDirectorySubjects.
 
         requestor = optional(object({
           subject_type = string           # Specifies the type of users. Valid values are singleUser, groupMembers, connectedOrganizationMembers, requestorManager, internalSponsors or externalSponsors
@@ -80,43 +80,11 @@ variable "entitlement_catalogs" {
       })))
 
       resources = list(object({                             # List of resources, one resource per object
-        display_name           = string                     # Descriptive display name to be used for the Terraform Resource key
+        display_name           = optional(string)           # Deprecated! Descriptive display name to be used for the Terraform Resource key
         resource_origin_system = string                     # The type of resource in the origin system. "SharePointOnline", "AadApplication", "AadGroup"
         resource_origin_id     = string                     # The ID of the Azure resource to be added to the Catalog and Access Package
         access_type            = optional(string, "Member") # The role of access type to the specified resource. "Member", "Owner". Defaults to "Member"
       }))
     }))
   }))
-}
-
-###   Local Variable - Identity Governance Source Variable transformation
-############################################################################
-locals {
-  entitlement-catalogs = flatten([                    # Flattens the nested lists to a list with a depth of 1
-    for catalog in var.entitlement_catalogs : catalog # Iterates through all Entitlement Catalogs and creates a list of them
-  ])
-
-  access-packages = flatten([                                      # Flattens the nested lists to a list with a depth of 1
-    for catalog in var.entitlement_catalogs : [                    # Iterates through all Entitlement Catalogs
-      for ap in catalog.access_packages : merge(ap, {              # Iterates through all Access Packages within each Catalog
-        catalog_key = catalog.display_name                         # Creates a reference key to the Entitlement Catalog
-        key         = "${catalog.display_name}-${ap.display_name}" # Creates a reference key for the Access Package
-      })
-    ]
-  ])
-
-  resources = flatten([                                                                                                   # Flattens the nested lists to a list with a depth of 1
-    for catalog in var.entitlement_catalogs : [                                                                           # Iterates through all Entitlement Catalogs
-      for ap in catalog.access_packages : [                                                                               # Iterates through all Access Packages within each Catalog
-        for resource in ap.resources : merge(resource, {                                                                  # Iterates through all Resources within each Access Package, within each Catalog
-          catalog_key                             = catalog.display_name                                                  # Creates a reference key to the Entitlement Catalog
-          access_package_key                      = "${catalog.display_name}-${ap.display_name}"                          # Creates a reference key to the Access Package
-          access_package_resource_association_key = "${catalog.display_name}-${ap.display_name}-${resource.display_name}" # Creates a reference key for the Access Package Resource Associations
-          catalog_resource_association_key        = "${catalog.display_name}-${resource.display_name}"                    # Creates a reference key to be used for the Catalog Resource Associations
-        })
-      ]
-    ]
-  ])
-
-  resource-catalog-associations-filtered = values(zipmap(local.resources[*].catalog_resource_association_key, local.resources)) # Goes through the list of resource objects and removes duplicates, keeping the last instance in the list
 }
