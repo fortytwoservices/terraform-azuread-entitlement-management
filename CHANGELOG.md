@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.2.0](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/compare/v2.1.0...v2.2.0) (2025-08-05)
+
+
+### Features
+
+* improve code to avoid unnecessary variables ([79b6d7e](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/79b6d7e7146aab2cfa7d25fc1122ac4cf9dcc8d7))
+* improve code to avoid unnecessary variables ([9269bf3](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/9269bf3e28b56581ffb24c0531c1227010fd962a))
+
+
+### Bug Fixes
+
+* change variable description text ([2690295](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/2690295e2e8772268330bc1b68881e4de62e4558))
+* change variable description text ([8efbddb](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/8efbddbe064fe456797e1433ff046c2c4cc290ff))
+* grept apply ([c44ad45](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/c44ad45990312ba90f9b1e2d5b07ac6d79fd374a))
+* grept apply ([0052f3e](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/0052f3e77e15a37f18cbbe45bc27e0e79f433ffd))
+* grept apply ([25b9dfa](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/25b9dfacb32a3664696015a3252757ce65339f08))
+
 ## [2.1.0](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/compare/v2.0.1...v2.1.0) (2024-06-18)
 
 
