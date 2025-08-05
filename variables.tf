@@ -49,7 +49,7 @@ variable "entitlement_catalogs" {
 
       alternative_approvers = optional(list(object({
         subject_type = string                # Type of approver. "singleUser", "groupMembers", "connectedOrganizationMembers", "requestorManager", "internalSponsors", "externalSponsors"
-        object_id    = string                # Object ID of the Primary Approver(s)
+        object_id    = string                # Object ID of the Primary Approver
         backup       = optional(bool, false) # For a user in an approval stage, this property indicates whether the user is a backup fallback appover
       })))
 
