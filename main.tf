@@ -40,7 +40,7 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
 
   requestor_settings {
     requests_accepted = each.value.requests_accepted
-    scope_type        = each.value.scope_type
+    scope_type        = each.value.scope_type != null ? each.value.scope_type : each.value.requestor_settings.scope_type
 
     dynamic "requestor" {
       for_each = toset(try(each.value.requestor_settings.requestor, null) != null ? [1] : [])
