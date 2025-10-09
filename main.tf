@@ -204,7 +204,7 @@ data "msgraph_resource" "resource_access_package_catalog_resource_roles" {
   for_each = { for resource in local.resources : resource.access_package_resource_association_key => resource if resource.resource_origin_system == "AadApplication" }
   url      = "/identityGovernance/entitlementManagement/catalogs/${azuread_access_package_catalog.entitlement-catalogs[each.value.catalog_key].id}/resourceRoles"
   query_parameters = {
-    "$filter" = ["(originSystem eq 'AadApplication' and resource/id eq '${msgraph_resource.resource_access_package_catalog_resources[each.key].output.all.value[0].id}')"]
+    "$filter" = ["(originSystem eq 'AadApplication' and resource/id eq '${data.msgraph_resource.resource_access_package_catalog_resources[each.key].output.all.value[0].id}')"]
     "$expand" = ["resource"]
   }
   response_export_values = {
