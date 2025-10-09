@@ -6,5 +6,9 @@ terraform {
       source  = "hashicorp/azuread"
       version = ">=2.39.0"
     }
+    msgraph = {
+      source  = "microsoft/msgraph"
+      version = ">=0.2.0"
+    }
   }
 }
