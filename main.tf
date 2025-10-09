@@ -210,8 +210,10 @@ data "msgraph_resource" "resource_access_package_catalog_resource_roles" {
     "$expand" = ["resource"]
   }
   response_export_values = {
-    all      = "@"
-    originid = "value[0].originId"
+    all          = "@"
+    originid     = "value[0].originId"
+    display_name = "value[0].displayName"
+    description  = "value[0].description"
   }
 
   depends_on = [
@@ -234,8 +236,8 @@ resource "msgraph_resource" "resource-access-package-associations" {
 
   body = {
     role = {
-      displayName  = "Standard User"
-      description  = "Standard User"
+      displayName  = data.msgraph_resource.resource_access_package_catalog_resource_roles[each.key].output.display_name
+      description  = data.msgraph_resource.resource_access_package_catalog_resource_roles[each.key].output.description
       originSystem = each.value.resource_origin_system
       originId     = data.msgraph_resource.resource_access_package_catalog_resource_roles[each.key].output.originid
       Resource = {
