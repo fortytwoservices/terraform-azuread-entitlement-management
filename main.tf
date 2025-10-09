@@ -197,10 +197,10 @@ data "msgraph_resource" "resource_access_package_catalog_resources" {
   ]
 }
 
-output "resource_access_package_catalog_resources_all" {
-  // it will output the whole response
-  value = data.msgraph_resource.resource_access_package_catalog_resources[*]
-}
+# output "resource_access_package_catalog_resources_all" {
+#   // it will output the whole response
+#   value = data.msgraph_resource.resource_access_package_catalog_resources[*]
+# }
 
 data "msgraph_resource" "resource_access_package_catalog_resource_roles" {
   for_each = { for resource in local.resources : resource.access_package_resource_association_key => resource if resource.resource_origin_system == "AadApplication" }
@@ -211,7 +211,7 @@ data "msgraph_resource" "resource_access_package_catalog_resource_roles" {
   }
   response_export_values = {
     all      = "@"
-    originid = "originId"
+    originid = "value[0].originId"
   }
 
   depends_on = [
@@ -221,10 +221,10 @@ data "msgraph_resource" "resource_access_package_catalog_resource_roles" {
   ]
 }
 
-output "resource_access_package_catalog_resource_roles_all" {
-  // it will output the whole response
-  value = data.msgraph_resource.resource_access_package_catalog_resource_roles[*]
-}
+# output "resource_access_package_catalog_resource_roles_all" {
+#   // it will output the whole response
+#   value = data.msgraph_resource.resource_access_package_catalog_resource_roles[*]
+# }
 
 ###   Identity Governance - Resource Access Package Associations for AadApplication due to https://github.com/hashicorp/terraform-provider-azuread/issues/1066
 ###################################################################
