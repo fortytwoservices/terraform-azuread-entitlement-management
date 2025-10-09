@@ -236,6 +236,7 @@ resource "msgraph_resource" "resource-access-package-associations" {
 
   body = {
     role = {
+      id           = each.value.access_type
       displayName  = data.msgraph_resource.resource_access_package_catalog_resource_roles[each.key].output.display_name
       description  = data.msgraph_resource.resource_access_package_catalog_resource_roles[each.key].output.description
       originSystem = each.value.resource_origin_system
