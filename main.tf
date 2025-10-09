@@ -186,8 +186,8 @@ data "msgraph_resource" "resource_access_package_catalog_resources" {
   }
   response_export_values = {
     all      = "@"
-    id       = "id"
-    scope_id = "scopes[0].id"
+    id       = "value[0].id"
+    scope_id = "value[0].scopes[0].id"
   }
 
   depends_on = [
