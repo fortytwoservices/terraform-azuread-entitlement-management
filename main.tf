@@ -197,7 +197,7 @@ data "msgraph_resource" "resource_access_package_catalog_resources" {
 
 output "resource_access_package_catalog_resources_all" {
   // it will output the whole response
-  value = data.msgraph_resource.resource_access_package_catalog_resources[*].output.all
+  value = data.msgraph_resource.resource_access_package_catalog_resources[*]
 }
 
 data "msgraph_resource" "resource_access_package_catalog_resource_roles" {
@@ -220,7 +220,7 @@ data "msgraph_resource" "resource_access_package_catalog_resource_roles" {
 
 output "resource_access_package_catalog_resource_roles_all" {
   // it will output the whole response
-  value = data.msgraph_resource.resource_access_package_catalog_resource_roles[*].output.all
+  value = data.msgraph_resource.resource_access_package_catalog_resource_roles[*]
 }
 
 ###   Identity Governance - Resource Access Package Associations for AadApplication due to https://github.com/hashicorp/terraform-provider-azuread/issues/1066
