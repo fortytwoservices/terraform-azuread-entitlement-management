@@ -1,8 +1,7 @@
 
-resource "msgraph_resource_action" "connected_organizations" {
+resource "msgraph_resource" "connected_organizations" {
   for_each     = { for org in var.connected_organizations : org.display_name => org }
-  resource_url = "/identityGovernance/entitlementManagement/connectedOrganizations"
-  method       = "POST"
+  url = "/identityGovernance/entitlementManagement/connectedOrganizations"
 
   body = {
     displayName = each.value.display_name

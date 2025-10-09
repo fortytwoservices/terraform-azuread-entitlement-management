@@ -272,7 +272,7 @@ The following resources are used by this module:
 - [azuread_access_package_catalog.entitlement-catalogs](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_catalog) (resource)
 - [azuread_access_package_resource_catalog_association.resource-catalog-associations](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_resource_catalog_association) (resource)
 - [azuread_access_package_resource_package_association.resource-access-package-associations](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_resource_package_association) (resource)
-- [msgraph_resource_action.connected_organizations](https://registry.terraform.io/providers/microsoft/msgraph/latest/docs/resources/resource_action) (resource)
+- [msgraph_resource.connected_organizations](https://registry.terraform.io/providers/microsoft/msgraph/latest/docs/resources/resource) (resource)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
