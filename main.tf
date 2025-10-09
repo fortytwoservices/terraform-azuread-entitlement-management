@@ -180,9 +180,12 @@ resource "azuread_access_package_resource_package_association" "resource-access-
 data "msgraph_resource" "resource_access_package_catalog_resources" {
   for_each         = { for resource in local.resources : resource.access_package_resource_association_key => resource if resource.resource_origin_system == "AadApplication" }
   url              = "/identityGovernance/entitlementManagement/catalogs/${azuread_access_package_catalog.entitlement-catalogs[each.value.catalog_key].id}/resources"
-  query_parameters = "$filter=(originSystem+eq+%AadApplication%27+and+resource/id+eq+%27${each.value.resource_origin_id}%27)&$expand=scopes"
+  query_parameters = {
+    "$filter" = ["(originSystem+eq+%AadApplication%27+and+resource/id+eq+%27${each.value.resource_origin_id}%27)"]
+    "$expand" = ["scopes"]
+  }
   response_export_values = {
-    all          = "@"
+    all = "@"
   }
 
   depends_on = [
@@ -198,11 +201,14 @@ output "resource_access_package_catalog_resources_all" {
 }
 
 data "msgraph_resource" "resource_access_package_catalog_resource_roles" {
-  for_each         = { for resource in local.resources : resource.access_package_resource_association_key => resource if resource.resource_origin_system == "AadApplication" }
-  url              = "/identityGovernance/entitlementManagement/catalogs/${azuread_access_package_catalog.entitlement-catalogs[each.value.catalog_key].id}/resourceRoles"
-  query_parameters = "$filter=(originSystem+eq+%AadApplication%27+and+resource/id+eq+%27${each.value.resource_origin_id}%27)&$expand=resource"
+  for_each = { for resource in local.resources : resource.access_package_resource_association_key => resource if resource.resource_origin_system == "AadApplication" }
+  url      = "/identityGovernance/entitlementManagement/catalogs/${azuread_access_package_catalog.entitlement-catalogs[each.value.catalog_key].id}/resourceRoles"
+  query_parameters = {
+    "$filter" = ["(originSystem+eq+%AadApplication%27+and+resource/id+eq+%27${each.value.resource_origin_id}%27)"]
+    "$expand" = ["resource"]
+  }
   response_export_values = {
-    all          = "@"
+    all = "@"
   }
 
   depends_on = [
