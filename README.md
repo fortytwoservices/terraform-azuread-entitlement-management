@@ -259,6 +259,8 @@ The following providers are used by this module:
 
 - <a name="provider_azuread"></a> [azuread](#provider\_azuread) (>=2.39.0)
 
+- <a name="provider_msgraph"></a> [msgraph](#provider\_msgraph)
+
 ## Resources
 
 The following resources are used by this module:
@@ -268,6 +270,7 @@ The following resources are used by this module:
 - [azuread_access_package_catalog.entitlement-catalogs](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_catalog) (resource)
 - [azuread_access_package_resource_catalog_association.resource-catalog-associations](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_resource_catalog_association) (resource)
 - [azuread_access_package_resource_package_association.resource-access-package-associations](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_resource_package_association) (resource)
+- [msgraph_resource_action.connected_organizations](https://registry.terraform.io/providers/hashicorp/msgraph/latest/docs/resources/resource_action) (resource)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -370,7 +373,28 @@ list(object({                         # List of Entitlement Catalogs, one object
 
 ## Optional Inputs
 
-No optional inputs.
+The following input variables are optional (have default values):
+
+### <a name="input_connected_organizations"></a> [connected\_organizations](#input\_connected\_organizations)
+
+Description: A list of connected organizations to be used in Access Package policies
+
+Type:
+
+```hcl
+list(object({
+    display_name = string                         # Name of the Connected Organization.
+    description  = optional(string)               # Description of the Connected Organization.
+    identity_sources = list(object({              # A list of identity sources for the connected organization.
+      type         = optional(string, "tenantid") # Type of identity source. Either "tenantid" or "domainname". Defaults to "tenantid".
+      lookup_value = string                       # If `type` is "tenantid", this is the ID of the external Azure AD tenant. If `type` is "domainname", this is the verified domain name of the external Azure AD tenant.
+      display_name = optional(string, "")         # (Optional) Display name for the identity source.
+    }))
+    state = optional(string, "configured") # State of the connected organization. Either "configured" or "proposed". Defaults to "configured".
+  }))
+```
+
+Default: `[]`
 
 ## Outputs
 
