@@ -1,3 +1,24 @@
+
+resource "msgraph_resource_action" "connected_organizations" {
+  for_each     = { for org in var.connected_organizations : org.display_name => org }
+  resource_url = "/identityGovernance/entitlementManagement/connectedOrganizations"
+  method       = "POST"
+
+  body = {
+    displayName = each.value.display_name
+    description = each.value.description
+    identitySources = [
+      for source in each.value.identity_sources : {
+        "@odata.type" = source.type == "tenantid" ? "#microsoft.graph.azureActiveDirectoryTenant" : "#microsoft.graph.domainIdentitySource"
+        displayName   = source.display_name
+        tenantId      = source.type == "tenantid" ? source.lookup_value : null
+        domainName    = source.type == "domainname" ? source.lookup_value : null
+      }
+    ]
+    state = each.value.state
+  }
+}
+
 ###   Identity Governance - Entitlement Catalogs
 ###################################################
 resource "azuread_access_package_catalog" "entitlement-catalogs" {
