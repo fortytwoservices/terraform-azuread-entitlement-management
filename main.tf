@@ -241,7 +241,7 @@ resource "msgraph_resource" "resource-access-package-associations" {
       description  = data.msgraph_resource.resource_access_package_catalog_resource_roles[each.key].output.description
       originSystem = each.value.resource_origin_system
       originId     = data.msgraph_resource.resource_access_package_catalog_resource_roles[each.key].output.originid
-      Resource = {
+      resource = {
         id           = data.msgraph_resource.resource_access_package_catalog_resources[each.key].output.id
         originId     = each.value.resource_origin_id
         originSystem = each.value.resource_origin_system
