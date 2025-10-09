@@ -39,6 +39,8 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azuread"></a> [azuread](#requirement\_azuread) (>=2.39.0)
 
+- <a name="requirement_msgraph"></a> [msgraph](#requirement\_msgraph) (>=0.2.0)
+
 ## Examples
 
 ### Basic example
@@ -259,6 +261,8 @@ The following providers are used by this module:
 
 - <a name="provider_azuread"></a> [azuread](#provider\_azuread) (>=2.39.0)
 
+- <a name="provider_msgraph"></a> [msgraph](#provider\_msgraph) (>=0.2.0)
+
 ## Resources
 
 The following resources are used by this module:
@@ -268,6 +272,9 @@ The following resources are used by this module:
 - [azuread_access_package_catalog.entitlement-catalogs](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_catalog) (resource)
 - [azuread_access_package_resource_catalog_association.resource-catalog-associations](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_resource_catalog_association) (resource)
 - [azuread_access_package_resource_package_association.resource-access-package-associations](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_resource_package_association) (resource)
+- [msgraph_resource_action.resource-access-package-associations](https://registry.terraform.io/providers/microsoft/msgraph/latest/docs/resources/resource_action) (resource)
+- [msgraph_resource.resource_access_package_catalog_resource_roles](https://registry.terraform.io/providers/microsoft/msgraph/latest/docs/data-sources/resource) (data source)
+- [msgraph_resource.resource_access_package_catalog_resources](https://registry.terraform.io/providers/microsoft/msgraph/latest/docs/data-sources/resource) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
