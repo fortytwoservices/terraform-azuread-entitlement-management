@@ -230,9 +230,10 @@ data "msgraph_resource" "resource_access_package_catalog_resource_roles" {
 
 ###   Identity Governance - Resource Access Package Associations for AadApplication due to https://github.com/hashicorp/terraform-provider-azuread/issues/1066
 ###################################################################
-resource "msgraph_resource" "resource-access-package-associations" {
-  for_each = { for resource in local.resources : resource.access_package_resource_association_key => resource if resource.resource_origin_system == "AadApplication" }
-  url      = "/identityGovernance/entitlementManagement/accessPackages/${azuread_access_package.access-packages[each.value.access_package_key].id}/resourceRoleScopes"
+resource "msgraph_resource_action" "resource-access-package-associations" {
+  for_each     = { for resource in local.resources : resource.access_package_resource_association_key => resource if resource.resource_origin_system == "AadApplication" }
+  resource_url = "/identityGovernance/entitlementManagement/accessPackages/${azuread_access_package.access-packages[each.value.access_package_key].id}/resourceRoleScopes"
+  method       = "POST"
 
   body = {
     role = {
