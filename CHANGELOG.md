@@ -1,5 +1,22 @@
 # Changelog
 
+## [3.0.0](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/compare/v2.2.0...v3.0.0) (2025-10-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* add support for connected organizations ([#248](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/issues/248))
+
+### Features
+
+* add msgraph provider and support AadApplication ([41f063e](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/41f063e477049739f832c56fa69724420e425639))
+* add support for connected organizations ([#248](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/issues/248)) ([3181647](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/3181647cc7e3b3495b0840393bd2740b7112bf09))
+
+
+### Bug Fixes
+
+* correct connect organization to use tenant id only ([#250](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/issues/250)) ([4b84f35](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/4b84f350d82699a248cbdb0395d40ca760c1e6df))
+
 ## [2.2.0](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/compare/v2.1.0...v2.2.0) (2025-08-05)
 
 
