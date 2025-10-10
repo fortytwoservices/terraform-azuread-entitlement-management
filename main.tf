@@ -181,15 +181,90 @@ resource "azuread_access_package_resource_catalog_association" "resource-catalog
   ]
 }
 
-
 ###   Identity Governance - Resource Access Package Associations
 ###################################################################
 resource "azuread_access_package_resource_package_association" "resource-access-package-associations" {
-  for_each = { for resource in local.resources : resource.access_package_resource_association_key => resource }
+  for_each = { for resource in local.resources : resource.access_package_resource_association_key => resource if resource.resource_origin_system != "AadApplication" }
 
   catalog_resource_association_id = azuread_access_package_resource_catalog_association.resource-catalog-associations[each.value.catalog_resource_association_key].id
   access_package_id               = azuread_access_package.access-packages[each.value.access_package_key].id
   access_type                     = each.value.access_type
+
+  depends_on = [
+    azuread_access_package_catalog.entitlement-catalogs,
+    azuread_access_package.access-packages,
+    azuread_access_package_resource_catalog_association.resource-catalog-associations
+  ]
+}
+
+data "msgraph_resource" "resource_access_package_catalog_resources" {
+  for_each = { for resource in local.resources : resource.access_package_resource_association_key => resource if resource.resource_origin_system == "AadApplication" }
+  url      = "/identityGovernance/entitlementManagement/catalogs/${azuread_access_package_catalog.entitlement-catalogs[each.value.catalog_key].id}/resources"
+  query_parameters = {
+    "$filter" = ["(originId eq '${each.value.resource_origin_id}')"]
+    "$expand" = ["scopes"]
+  }
+  response_export_values = {
+    all      = "@"
+    id       = "value[0].id"
+    scope_id = "value[0].scopes[0].id"
+  }
+
+  depends_on = [
+    azuread_access_package_catalog.entitlement-catalogs,
+    azuread_access_package.access-packages,
+    azuread_access_package_resource_catalog_association.resource-catalog-associations
+  ]
+}
+
+data "msgraph_resource" "resource_access_package_catalog_resource_roles" {
+  for_each = { for resource in local.resources : resource.access_package_resource_association_key => resource if resource.resource_origin_system == "AadApplication" }
+  url      = "/identityGovernance/entitlementManagement/catalogs/${azuread_access_package_catalog.entitlement-catalogs[each.value.catalog_key].id}/resourceRoles"
+  query_parameters = {
+    "$filter" = ["(originSystem eq 'AadApplication' and resource/id eq '${data.msgraph_resource.resource_access_package_catalog_resources[each.key].output.id}')"]
+    "$expand" = ["resource"]
+  }
+  response_export_values = {
+    all          = "@"
+    originid     = "value[0].originId"
+    display_name = "value[0].displayName"
+    description  = "value[0].description"
+  }
+
+  depends_on = [
+    azuread_access_package_catalog.entitlement-catalogs,
+    azuread_access_package.access-packages,
+    azuread_access_package_resource_catalog_association.resource-catalog-associations
+  ]
+}
+
+###   Identity Governance - Resource Access Package Associations for AadApplication due to https://github.com/hashicorp/terraform-provider-azuread/issues/1066
+###################################################################
+resource "msgraph_resource_action" "resource-access-package-associations" {
+  for_each     = { for resource in local.resources : resource.access_package_resource_association_key => resource if resource.resource_origin_system == "AadApplication" }
+  resource_url = "/identityGovernance/entitlementManagement/accessPackages/${azuread_access_package.access-packages[each.value.access_package_key].id}/resourceRoleScopes"
+  method       = "POST"
+
+  body = {
+    role = {
+      id           = each.value.access_type
+      displayName  = data.msgraph_resource.resource_access_package_catalog_resource_roles[each.key].output.display_name
+      description  = data.msgraph_resource.resource_access_package_catalog_resource_roles[each.key].output.description
+      originSystem = each.value.resource_origin_system
+      originId     = data.msgraph_resource.resource_access_package_catalog_resource_roles[each.key].output.originid
+      resource = {
+        id           = data.msgraph_resource.resource_access_package_catalog_resources[each.key].output.id
+        originId     = each.value.resource_origin_id
+        originSystem = each.value.resource_origin_system
+      }
+    }
+    scope = {
+      id           = data.msgraph_resource.resource_access_package_catalog_resources[each.key].output.scope_id
+      originId     = each.value.resource_origin_id
+      originSystem = each.value.resource_origin_system
+      isRootScope  = true
+    }
+  }
 
   depends_on = [
     azuread_access_package_catalog.entitlement-catalogs,
