@@ -8,7 +8,7 @@ variable "connected_organizations" {
     identity_sources = list(object({              # A list of identity sources for the connected organization.
       type         = optional(string, "tenantid") # Type of identity source. Either "tenantid" or "domainname". Defaults to "tenantid".
       lookup_value = string                       # If `type` is "tenantid", this is the ID of the external Azure AD tenant. If `type` is "domainname", this is the verified domain name of the external Azure AD tenant.
-      display_name = optional(string, "")         # (Optional) Display name for the identity source.
+      display_name = optional(string)             # (Optional) Display name for the identity source.
     }))
     state = optional(string, "configured") # State of the connected organization. Either "configured" or "proposed". Defaults to "configured".
   }))

@@ -9,11 +9,11 @@ resource "msgraph_resource" "connected_organizations" {
     identitySources = [
       for source in each.value.identity_sources : source.type == "tenantid" ? {
         "@odata.type" = "#microsoft.graph.azureActiveDirectoryTenant"
-        displayName   = source.display_name
+        displayName   = source.display_name == null ? source.lookup_value : source.display_name
         tenantId      = source.lookup_value
         } : {
         "@odata.type" = "#microsoft.graph.domainIdentitySource"
-        displayName   = source.display_name
+        displayName   = source.display_name == null ? source.lookup_value : source.display_name
         domainName    = source.lookup_value
       }
     ]
