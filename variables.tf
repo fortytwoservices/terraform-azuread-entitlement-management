@@ -83,7 +83,7 @@ variable "entitlement_catalogs" {
         display_name           = optional(string)           # Deprecated! Descriptive display name to be used for the Terraform Resource key
         resource_origin_system = string                     # The type of resource in the origin system. "SharePointOnline", "AadApplication", "AadGroup"
         resource_origin_id     = string                     # The ID of the Azure resource to be added to the Catalog and Access Package
-        access_type            = optional(string, "Member") # The role of access type to the specified resource. "Member", "Owner". Defaults to "Member"
+        access_type            = optional(string, "Member") # The role of access type to the specified resource. "Member" or "Owner" can be used if resource_origin_system is "AadGroup", uuid of role needs to be used if resource_origin_system is "AadApplication". Defaults to "Member"
       }))
     }))
   }))
