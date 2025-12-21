@@ -4,3 +4,9 @@ MD013:
   line_length: 380
 MD024:
   siblings_only: true
+MD033: {
+    "allowed_elements": [
+      "script"
+    ]
+  }
+MD041: false
