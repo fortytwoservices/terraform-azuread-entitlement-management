@@ -204,6 +204,7 @@ Description: Outputs all Resources associated with the Entitlement Catalogs
 
 No modules.
 
+<!-- markdownlint-disable MD013 -->
 ## About
 
 [Fortytwo.io](https://www.fortytwo.io) is a Nordic cloud and identity security specialist focused on Microsoft Entra ID, Azure, and modern Zero Trust architectures. We help organizations enhance their security posture, streamline identity management, and implement robust cloud solutions tailored to their unique needs.

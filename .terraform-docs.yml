@@ -33,6 +33,7 @@ content: |-
 
   {{ .Modules }}
 
+  <!-- markdownlint-disable MD013 -->
   {{ .Footer }}
   
 output:
