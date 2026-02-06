@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/compare/v3.0.0...v3.1.0) (2026-02-06)
+
+
+### Features
+
+* add connected_organization_key reference ([#283](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/issues/283)) ([6776727](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/67767272bd8178a06b3db90e15efe843a3e027fd))
+
 ## [3.0.0](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/compare/v2.2.0...v3.0.0) (2025-10-10)
 
 
