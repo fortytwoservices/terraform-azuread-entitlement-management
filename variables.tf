@@ -38,8 +38,9 @@ variable "entitlement_catalogs" {
         scope_type        = optional(string, "AllExistingDirectoryMemberUsers") # A Specifies the scope of the requestors. Valid values are AllConfiguredConnectedOrganizationSubjects, AllExistingConnectedOrganizationSubjects, AllExistingDirectoryMemberUsers, AllExistingDirectorySubjects, AllExternalSubjects, NoSubjects, SpecificConnectedOrganizationSubjects, or SpecificDirectorySubjects.
 
         requestor = optional(object({
-          subject_type = string           # Specifies the type of users. Valid values are singleUser, groupMembers, connectedOrganizationMembers, requestorManager, internalSponsors or externalSponsors
-          object_id    = optional(string) # The ID of the subject
+          subject_type               = string           # Specifies the type of users. Valid values are singleUser, groupMembers, connectedOrganizationMembers, requestorManager, internalSponsors or externalSponsors
+          object_id                  = optional(string) # The ID of the subject
+          connected_organization_key = optional(string) # The key of the connected organization, required if you want to match connected organization created in this module.
         }))
         }),
         {
