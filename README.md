@@ -22,40 +22,6 @@ Which resources, and how many of each depends on your configuration
 
 Complete list of all Terraform resources deployed is provided at the bottom of this page
 
-## Testing
-
-This module includes automated testing for both basic and advanced examples using Terraform validation.
-
-### Running Tests Locally
-
-Use the provided Makefile to run tests:
-
-```bash
-# Run all tests (basic and advanced examples)
-make test
-
-# Run tests for specific examples
-make test-basic
-make test-advanced
-
-# Validate all configurations
-make validate
-
-# Format Terraform files
-make fmt
-
-# Clean up test artifacts
-make clean
-```
-
-### CI/CD
-
-Tests are automatically run on pull requests via GitHub Actions. The workflow validates:
-- Terraform formatting
-- Root module configuration
-- Basic example configuration
-- Advanced example configuration
-
 ## Destroy resources
 
 At the time of writing, there is a hard dependency from the Microsoft Azure API that requires all Assignments of the Access Package to be removed before you are allowed to destroy it.
