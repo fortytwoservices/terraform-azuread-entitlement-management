@@ -69,7 +69,7 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
       for_each = toset(try(each.value.requestor_settings.requestor, null) != null ? [1] : [])
 
       content {
-        object_id    = each.value.requestor_settings.requestor.subject_type == "connectedOrganizationMembers" ? msgraph_resource.connected_organizations[each.value.requestor_settings.requestor.connected_organization_key].output.id : each.value.requestor_settings.requestor.object_id
+        object_id    = each.value.requestor_settings.requestor.subject_type == "connectedOrganizationMembers" ? (each.value.requestor_settings.requestor.connected_organization_key != null ? msgraph_resource.connected_organizations[each.value.requestor_settings.requestor.connected_organization_key].output.id : each.value.requestor_settings.requestor.object_id) : each.value.requestor_settings.requestor.object_id
         subject_type = each.value.requestor_settings.requestor.subject_type
       }
     }
