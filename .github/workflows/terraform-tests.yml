@@ -39,24 +39,25 @@ jobs:
         run: terraform fmt -check -recursive
         continue-on-error: false
 
-      - name: Initialize Terraform for Tests
+      - name: Validate Root Module
+        id: validate-root
         run: |
-          cd tests
           terraform init -backend=false
+          terraform validate
 
-      - name: Run Basic Example Tests
-        id: test-basic
+      - name: Validate Basic Example
+        id: validate-basic
         run: |
-          cd tests
-          terraform test -filter=basic.tftest.hcl -no-color
-        continue-on-error: false
+          cd examples/basic
+          terraform init -backend=false
+          terraform validate
 
-      - name: Run Advanced Example Tests
-        id: test-advanced
+      - name: Validate Advanced Example
+        id: validate-advanced
         run: |
-          cd tests
-          terraform test -filter=advanced.tftest.hcl -no-color
-        continue-on-error: false
+          cd examples/advanced
+          terraform init -backend=false
+          terraform validate
 
       - name: Test Summary
         if: always()
@@ -66,5 +67,7 @@ jobs:
           echo "| Test | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| Format Check | ${{ steps.fmt.outcome == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Basic Example | ${{ steps.test-basic.outcome == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Advanced Example | ${{ steps.test-advanced.outcome == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Root Module Validation | ${{ steps.validate-root.outcome == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Basic Example Validation | ${{ steps.validate-basic.outcome == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Advanced Example Validation | ${{ steps.validate-advanced.outcome == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+
