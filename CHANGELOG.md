@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.1](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/compare/v3.1.0...v3.1.1) (2026-02-07)
+
+
+### Bug Fixes
+
+* use object_id for connectedorgmembers if key is not set ([#286](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/issues/286)) ([8150bba](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/8150bba4c82aae8e8729b39d7fb4c991a99a5f37))
+
 ## [3.1.0](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/compare/v3.0.0...v3.1.0) (2026-02-06)
 
 
