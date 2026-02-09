@@ -60,7 +60,6 @@
     { "@type": "Country", "name": "Sweden" },
     { "@type": "Country", "name": "Denmark" },
     { "@type": "Country", "name": "Finland" },
-  
     { "@type": "AdministrativeArea", "name": "European Union" }
   ],
   "keywords": [
