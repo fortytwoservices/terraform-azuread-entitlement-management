@@ -18,6 +18,8 @@ terraform {
 ###   Entra ID Groups
 ########################
 locals {
+  prefix = "tftest" # Prefix for resource names
+
   ad_groups = [
     "elm_approvers", # Azure AD Group whose members are allowed to approve Access Package requests
     "elm_approved"   # Azure AD Group that users will become member of when access request is approved
