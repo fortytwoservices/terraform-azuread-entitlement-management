@@ -18,6 +18,8 @@ terraform {
 ###   Azure AD Groups
 ########################
 locals {
+  prefix = "tftest" # Prefix for resource names
+
   ad_groups = [
     "elm_requestors",            # Azure AD Group whose members are allowed to request access
     "elm_approvers",             # Azure AD Group whose members are allowed to approve Access Package requests
