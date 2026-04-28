@@ -295,7 +295,11 @@ resource "msgraph_resource_action" "sharepoint-catalog-associations" {
   method       = "POST"
 
   body = {
+<<<<<<< HEAD
     requestType   = "AdminAdd"
+=======
+    requestType  = "AdminAdd"
+>>>>>>> 1f9b4e1 (fix: Handle SharePointOnline resource associations via msgraph API)
     justification = ""
     resource = {
       originId     = each.value.resource_origin_id
