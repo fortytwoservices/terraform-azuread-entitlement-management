@@ -187,7 +187,7 @@ resource "azuread_access_package_resource_catalog_association" "resource-catalog
 ###   Identity Governance - Resource Access Package Associations
 ###################################################################
 resource "azuread_access_package_resource_package_association" "resource-access-package-associations" {
-  for_each = { for resource in local.resources : resource.access_package_resource_association_key => resource if resource.resource_origin_system != "AadApplication" }
+  for_each = { for resource in local.resources : resource.access_package_resource_association_key => resource if resource.resource_origin_system != "AadApplication" && resource.resource_origin_system != "SharePointOnline" }
 
   catalog_resource_association_id = azuread_access_package_resource_catalog_association.resource-catalog-associations[each.value.catalog_resource_association_key].id
   access_package_id               = azuread_access_package.access-packages[each.value.access_package_key].id
@@ -238,6 +238,106 @@ data "msgraph_resource" "resource_access_package_catalog_resource_roles" {
     azuread_access_package_catalog.entitlement-catalogs,
     azuread_access_package.access-packages,
     azuread_access_package_resource_catalog_association.resource-catalog-associations
+  ]
+}
+
+###   Identity Governance - Resource Catalog Associations for SharePointOnline
+###   due to https://github.com/hashicorp/terraform-provider-azuread/issues/1637
+###################################################################
+resource "msgraph_resource_action" "sharepoint-catalog-associations" {
+  for_each     = { for resource in local.sharepoint-catalog-associations-filtered : resource.catalog_resource_association_key => resource }
+  resource_url = "/identityGovernance/entitlementManagement/resourceRequests"
+  method       = "POST"
+
+  body = {
+    requestType  = "AdminAdd"
+    justification = ""
+    resource = {
+      originId     = each.value.resource_origin_id
+      originSystem = "SharePointOnline"
+    }
+    catalog = {
+      id = azuread_access_package_catalog.entitlement-catalogs[each.value.catalog_key].id
+    }
+  }
+
+  depends_on = [
+    azuread_access_package_catalog.entitlement-catalogs
+  ]
+}
+
+data "msgraph_resource" "sharepoint_catalog_resources" {
+  for_each = { for resource in local.resources : resource.access_package_resource_association_key => resource if resource.resource_origin_system == "SharePointOnline" }
+  url      = "/identityGovernance/entitlementManagement/catalogs/${azuread_access_package_catalog.entitlement-catalogs[each.value.catalog_key].id}/resources"
+  query_parameters = {
+    "$filter" = ["(originId eq '${each.value.resource_origin_id}')"]
+    "$expand" = ["scopes"]
+  }
+  response_export_values = {
+    all      = "@"
+    id       = "value[0].id"
+    scope_id = "value[0].scopes[0].id"
+  }
+
+  depends_on = [
+    azuread_access_package_catalog.entitlement-catalogs,
+    msgraph_resource_action.sharepoint-catalog-associations
+  ]
+}
+
+data "msgraph_resource" "sharepoint_catalog_resource_roles" {
+  for_each = { for resource in local.resources : resource.access_package_resource_association_key => resource if resource.resource_origin_system == "SharePointOnline" }
+  url      = "/identityGovernance/entitlementManagement/catalogs/${azuread_access_package_catalog.entitlement-catalogs[each.value.catalog_key].id}/resourceRoles"
+  query_parameters = {
+    "$filter" = ["(originSystem eq 'SharePointOnline' and resource/id eq '${data.msgraph_resource.sharepoint_catalog_resources[each.key].output.id}')"]
+    "$expand" = ["resource"]
+  }
+  response_export_values = {
+    all          = "@"
+    id           = "value[0].id"
+    display_name = "value[0].displayName"
+    origin_id    = "value[0].originId"
+  }
+
+  depends_on = [
+    azuread_access_package_catalog.entitlement-catalogs,
+    msgraph_resource_action.sharepoint-catalog-associations,
+    data.msgraph_resource.sharepoint_catalog_resources
+  ]
+}
+
+###   Identity Governance - Resource Access Package Associations for SharePointOnline
+###   due to https://github.com/hashicorp/terraform-provider-azuread/issues/1637
+###################################################################
+resource "msgraph_resource_action" "sharepoint-access-package-associations" {
+  for_each     = { for resource in local.resources : resource.access_package_resource_association_key => resource if resource.resource_origin_system == "SharePointOnline" }
+  resource_url = "/identityGovernance/entitlementManagement/accessPackages/${azuread_access_package.access-packages[each.value.access_package_key].id}/resourceRoleScopes"
+  method       = "POST"
+
+  body = {
+    role = {
+      displayName  = data.msgraph_resource.sharepoint_catalog_resource_roles[each.key].output.display_name
+      originSystem = "SharePointOnline"
+      originId     = data.msgraph_resource.sharepoint_catalog_resource_roles[each.key].output.origin_id
+      resource = {
+        id = data.msgraph_resource.sharepoint_catalog_resources[each.key].output.id
+      }
+    }
+    scope = {
+      displayName  = "Root"
+      description  = "Root Scope"
+      originId     = each.value.resource_origin_id
+      originSystem = "SharePointOnline"
+      isRootScope  = true
+    }
+  }
+
+  depends_on = [
+    azuread_access_package_catalog.entitlement-catalogs,
+    azuread_access_package.access-packages,
+    msgraph_resource_action.sharepoint-catalog-associations,
+    data.msgraph_resource.sharepoint_catalog_resources,
+    data.msgraph_resource.sharepoint_catalog_resource_roles
   ]
 }
 
