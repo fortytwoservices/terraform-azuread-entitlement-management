@@ -170,6 +170,51 @@ resource "azuread_access_package_assignment_policy" "assignment_policies" {
   ]
 }
 
+###   Identity Governance - Auto-Assignment Policies
+###   Created only when auto_assignment_policy is defined on an access package.
+###   These are separate from request-based policies - Entra ID automatically
+###   grants access to users matching the OData filter without requiring a request.
+###   Uses msgraph_resource directly because the azuread provider does not yet support
+###   automaticRequestSettings (https://github.com/hashicorp/terraform-provider-azuread/issues/1449)
+####################################################################################################
+resource "msgraph_resource" "auto-assignment-policies" {
+  for_each = { for ap in local.access-packages : ap.key => ap if ap.auto_assignment_policy != null }
+
+  url = "/identityGovernance/entitlementManagement/assignmentPolicies"
+
+  body = {
+    displayName          = "${each.value.display_name}-auto-assignment-policy"
+    description          = each.value.description
+    allowedTargetScope   = "specificDirectoryUsers"
+    specificAllowedTargets = [
+      {
+        "@odata.type"  = "#microsoft.graph.attributeRuleMembers"
+        description    = "Attribute rule for auto-assignment"
+        membershipRule = each.value.auto_assignment_policy.filter
+      }
+    ]
+    automaticRequestSettings = {
+      requestAccessForAllowedTargets             = true
+      removeAccessWhenTargetLeavesAllowedTargets = each.value.auto_assignment_policy.remove_when_target_leaves
+      gracePeriodBeforeAccessRemoval             = each.value.auto_assignment_policy.grace_period_before_removal
+    }
+    accessPackage = {
+      id = azuread_access_package.access-packages[each.key].id
+    }
+  }
+
+  response_export_values = {
+    id = "id"
+  }
+
+  depends_on = [
+    azuread_access_package_catalog.entitlement-catalogs,
+    azuread_access_package.access-packages,
+    azuread_access_package_resource_catalog_association.resource-catalog-associations,
+    azuread_access_package_resource_package_association.resource-access-package-associations
+  ]
+}
+
 ###   Identity Governance - Resource Catalog Associations
 ############################################################
 resource "azuread_access_package_resource_catalog_association" "resource-catalog-associations" {
