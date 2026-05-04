@@ -183,9 +183,15 @@ resource "msgraph_resource" "auto-assignment-policies" {
   url = "/identityGovernance/entitlementManagement/assignmentPolicies"
 
   body = {
+<<<<<<< HEAD
     displayName        = "${each.value.display_name}-auto-assignment-policy"
     description        = each.value.description
     allowedTargetScope = "specificDirectoryUsers"
+=======
+    displayName          = "${each.value.display_name}-auto-assignment-policy"
+    description          = each.value.description
+    allowedTargetScope   = "specificDirectoryUsers"
+>>>>>>> 0eb364a (feat: add useage for Identity Governance - Auto-Assignment Policies)
     specificAllowedTargets = [
       {
         "@odata.type"  = "#microsoft.graph.attributeRuleMembers"
