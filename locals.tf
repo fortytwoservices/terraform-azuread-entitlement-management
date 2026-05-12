@@ -27,5 +27,13 @@ locals {
     ]
   ])
 
-  resource-catalog-associations-filtered = values(zipmap(local.resources[*].catalog_resource_association_key, local.resources)) # Goes through the list of resource objects and removes duplicates, keeping the last instance in the list
+  resource-catalog-associations-filtered = [                                                                                                                 # Goes through the list of resource objects and removes duplicates, keeping the last instance in the list
+    for resource in values(zipmap(local.resources[*].catalog_resource_association_key, local.resources)) : resource                                           #
+    if resource.resource_origin_system != "SharePointOnline"                                                                                                  # SharePointOnline is handled via msgraph due to https://github.com/hashicorp/terraform-provider-azuread/issues/1637
+  ]                                                                                                                                                           #
+
+  sharepoint-catalog-associations-filtered = [                                                                                                                # Deduplicated list of SharePointOnline catalog associations
+    for resource in values(zipmap(local.resources[*].catalog_resource_association_key, local.resources)) : resource                                           #
+    if resource.resource_origin_system == "SharePointOnline"                                                                                                  #
+  ]                                                                                                                                                           #
 }
