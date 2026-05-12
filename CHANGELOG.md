@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/compare/v3.1.1...v3.2.0) (2026-05-12)
+
+
+### Features
+
+* add auto-assignment policy support ([#313](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/issues/313)) ([fce1abb](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/commit/fce1abb09e770849e7354faad59d728229d36974))
+
 ## [3.1.1](https://github.com/fortytwoservices/terraform-azuread-entitlement-management/compare/v3.1.0...v3.1.1) (2026-02-07)
 
 
