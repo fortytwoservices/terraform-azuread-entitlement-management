@@ -47,10 +47,15 @@ The following resources are used by this module:
 - [azuread_access_package_catalog.entitlement-catalogs](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_catalog) (resource)
 - [azuread_access_package_resource_catalog_association.resource-catalog-associations](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_resource_catalog_association) (resource)
 - [azuread_access_package_resource_package_association.resource-access-package-associations](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/resources/access_package_resource_package_association) (resource)
+- [msgraph_resource.auto-assignment-policies](https://registry.terraform.io/providers/microsoft/msgraph/latest/docs/resources/resource) (resource)
 - [msgraph_resource.connected_organizations](https://registry.terraform.io/providers/microsoft/msgraph/latest/docs/resources/resource) (resource)
 - [msgraph_resource_action.resource-access-package-associations](https://registry.terraform.io/providers/microsoft/msgraph/latest/docs/resources/resource_action) (resource)
+- [msgraph_resource_action.sharepoint-access-package-associations](https://registry.terraform.io/providers/microsoft/msgraph/latest/docs/resources/resource_action) (resource)
+- [msgraph_resource_action.sharepoint-catalog-associations](https://registry.terraform.io/providers/microsoft/msgraph/latest/docs/resources/resource_action) (resource)
 - [msgraph_resource.resource_access_package_catalog_resource_roles](https://registry.terraform.io/providers/microsoft/msgraph/latest/docs/data-sources/resource) (data source)
 - [msgraph_resource.resource_access_package_catalog_resources](https://registry.terraform.io/providers/microsoft/msgraph/latest/docs/data-sources/resource) (data source)
+- [msgraph_resource.sharepoint_catalog_resource_roles](https://registry.terraform.io/providers/microsoft/msgraph/latest/docs/data-sources/resource) (data source)
+- [msgraph_resource.sharepoint_catalog_resources](https://registry.terraform.io/providers/microsoft/msgraph/latest/docs/data-sources/resource) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -141,6 +146,12 @@ list(object({                         # List of Entitlement Catalogs, one object
           actual_value = optional(string) # The actual value of this choice. Defaults to default_text value
         })))
       })))
+
+      auto_assignment_policy = optional(object({
+        filter                      = string                  # OData filter expression identifying users to auto-assign, e.g. "(user.department -eq \"Engineering\")"
+        remove_when_target_leaves   = optional(bool, true)    # Revoke access when the user no longer matches the filter. Defaults to true
+        grace_period_before_removal = optional(string, "P7D") # ISO 8601 duration to wait before revoking access after a user leaves scope. Defaults to 7 days
+      }))
 
       resources = list(object({                             # List of resources, one resource per object
         display_name           = optional(string)           # Deprecated! Descriptive display name to be used for the Terraform Resource key

@@ -183,9 +183,9 @@ resource "msgraph_resource" "auto-assignment-policies" {
   url = "/identityGovernance/entitlementManagement/assignmentPolicies"
 
   body = {
-    displayName          = "${each.value.display_name}-auto-assignment-policy"
-    description          = each.value.description
-    allowedTargetScope   = "specificDirectoryUsers"
+    displayName        = "${each.value.display_name}-auto-assignment-policy"
+    description        = each.value.description
+    allowedTargetScope = "specificDirectoryUsers"
     specificAllowedTargets = [
       {
         "@odata.type"  = "#microsoft.graph.attributeRuleMembers"
@@ -295,7 +295,7 @@ resource "msgraph_resource_action" "sharepoint-catalog-associations" {
   method       = "POST"
 
   body = {
-    requestType  = "AdminAdd"
+    requestType   = "AdminAdd"
     justification = ""
     resource = {
       originId     = each.value.resource_origin_id
