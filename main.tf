@@ -183,15 +183,9 @@ resource "msgraph_resource" "auto-assignment-policies" {
   url = "/identityGovernance/entitlementManagement/assignmentPolicies"
 
   body = {
-<<<<<<< HEAD
     displayName        = "${each.value.display_name}-auto-assignment-policy"
     description        = each.value.description
     allowedTargetScope = "specificDirectoryUsers"
-=======
-    displayName          = "${each.value.display_name}-auto-assignment-policy"
-    description          = each.value.description
-    allowedTargetScope   = "specificDirectoryUsers"
->>>>>>> 0eb364a (feat: add useage for Identity Governance - Auto-Assignment Policies)
     specificAllowedTargets = [
       {
         "@odata.type"  = "#microsoft.graph.attributeRuleMembers"
@@ -301,11 +295,7 @@ resource "msgraph_resource_action" "sharepoint-catalog-associations" {
   method       = "POST"
 
   body = {
-<<<<<<< HEAD
     requestType   = "AdminAdd"
-=======
-    requestType  = "AdminAdd"
->>>>>>> 1f9b4e1 (fix: Handle SharePointOnline resource associations via msgraph API)
     justification = ""
     resource = {
       originId     = each.value.resource_origin_id
@@ -394,6 +384,87 @@ resource "msgraph_resource_action" "sharepoint-access-package-associations" {
     data.msgraph_resource.sharepoint_catalog_resources,
     data.msgraph_resource.sharepoint_catalog_resource_roles
   ]
+}
+
+###   Identity Governance - Force-remove active assignments before an Access Package is destroyed
+###   Required because the Graph API rejects DELETE on a package that still has Delivered assignments.
+###   Runs as a destroy-time provisioner so it always executes before the azuread_access_package destroy.
+###   Token acquisition: tries `az` CLI first, then falls back to ARM_TENANT_ID / ARM_CLIENT_ID / ARM_CLIENT_SECRET.
+####################################################################################################
+resource "terraform_data" "force-remove-assignments" {
+  for_each = { for ap in local.access-packages : ap.key => ap }
+
+  input = azuread_access_package.access-packages[each.key].id
+
+  provisioner "local-exec" {
+    when        = destroy
+    interpreter = ["/bin/bash", "-c"]
+    command     = <<-EOT
+      set -e
+      PACKAGE_ID="${self.input}"
+      GRAPH_URL="https://graph.microsoft.com/v1.0"
+      ODATA_FILTER='$filter'
+
+      TOKEN=""
+      if command -v az >/dev/null 2>&1; then
+        TOKEN=$(az account get-access-token --resource https://graph.microsoft.com --query accessToken -o tsv 2>/dev/null || true)
+      fi
+      if [ -z "$TOKEN" ] && [ -n "$ARM_TENANT_ID" ] && [ -n "$ARM_CLIENT_ID" ] && [ -n "$ARM_CLIENT_SECRET" ]; then
+        TOKEN=$(curl -sf -X POST \
+          "https://login.microsoftonline.com/$ARM_TENANT_ID/oauth2/v2.0/token" \
+          -H "Content-Type: application/x-www-form-urlencoded" \
+          -d "client_id=$ARM_CLIENT_ID&client_secret=$ARM_CLIENT_SECRET&scope=https://graph.microsoft.com/.default&grant_type=client_credentials" \
+          | jq -r '.access_token')
+      fi
+      if [ -z "$TOKEN" ]; then
+        echo "ERROR: Could not obtain a Graph API token. Run 'az login' or set ARM_TENANT_ID, ARM_CLIENT_ID, and ARM_CLIENT_SECRET."
+        exit 1
+      fi
+
+      ASSIGNMENTS=$(curl -sf \
+        -H "Authorization: Bearer $TOKEN" \
+        -G \
+        --data-urlencode "$ODATA_FILTER=accessPackage/id eq '$PACKAGE_ID' and state eq 'Delivered'" \
+        "$GRAPH_URL/identityGovernance/entitlementManagement/assignments" \
+        | jq -r '.value[].id // empty')
+
+      if [ -z "$ASSIGNMENTS" ]; then
+        echo "No active assignments for package $PACKAGE_ID — proceeding."
+        exit 0
+      fi
+
+      echo "Submitting AdminRemove requests for package $PACKAGE_ID..."
+      for ASSIGNMENT_ID in $ASSIGNMENTS; do
+        echo "  Removing assignment $ASSIGNMENT_ID"
+        curl -sf -X POST \
+          -H "Authorization: Bearer $TOKEN" \
+          -H "Content-Type: application/json" \
+          -d "{\"requestType\":\"AdminRemove\",\"assignment\":{\"id\":\"$ASSIGNMENT_ID\"}}" \
+          "$GRAPH_URL/identityGovernance/entitlementManagement/assignmentRequests" >/dev/null
+      done
+
+      echo "Waiting for assignments to be removed (up to 5 min)..."
+      ATTEMPTS=0
+      while [ $ATTEMPTS -lt 30 ]; do
+        REMAINING=$(curl -sf \
+          -H "Authorization: Bearer $TOKEN" \
+          -G \
+          --data-urlencode "$ODATA_FILTER=accessPackage/id eq '$PACKAGE_ID' and state eq 'Delivered'" \
+          "$GRAPH_URL/identityGovernance/entitlementManagement/assignments" \
+          | jq '.value | length')
+        if [ "$REMAINING" -eq 0 ]; then
+          echo "All assignments removed — ready to delete package."
+          exit 0
+        fi
+        echo "  $REMAINING assignment(s) still active, retrying in 10s..."
+        sleep 10
+        ATTEMPTS=$((ATTEMPTS + 1))
+      done
+      echo "WARNING: Timed out after 5 minutes. Proceeding with package deletion anyway."
+    EOT
+  }
+
+  depends_on = [azuread_access_package.access-packages]
 }
 
 ###   Identity Governance - Resource Access Package Associations for AadApplication due to https://github.com/hashicorp/terraform-provider-azuread/issues/1066
