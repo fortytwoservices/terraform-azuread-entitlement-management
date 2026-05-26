@@ -95,7 +95,7 @@ variable "entitlement_catalogs" {
       })))
 
       auto_assignment_policy = optional(object({
-        filter                      = string                   # OData filter expression identifying users to auto-assign, e.g. "(user.department -eq \"Engineering\")"
+        filter                      = string                  # OData filter expression identifying users to auto-assign, e.g. "(user.department -eq \"Engineering\")"
         remove_when_target_leaves   = optional(bool, true)    # Revoke access when the user no longer matches the filter. Defaults to true
         grace_period_before_removal = optional(string, "P7D") # ISO 8601 duration to wait before revoking access after a user leaves scope. Defaults to 7 days
       }))
