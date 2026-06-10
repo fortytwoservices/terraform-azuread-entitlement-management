@@ -183,15 +183,9 @@ resource "msgraph_resource" "auto-assignment-policies" {
   url = "/identityGovernance/entitlementManagement/assignmentPolicies"
 
   body = {
-<<<<<<< HEAD
     displayName        = "${each.value.display_name}-auto-assignment-policy"
     description        = each.value.description
     allowedTargetScope = "specificDirectoryUsers"
-=======
-    displayName          = "${each.value.display_name}-auto-assignment-policy"
-    description          = each.value.description
-    allowedTargetScope   = "specificDirectoryUsers"
->>>>>>> 0eb364a (feat: add useage for Identity Governance - Auto-Assignment Policies)
     specificAllowedTargets = [
       {
         "@odata.type"  = "#microsoft.graph.attributeRuleMembers"
@@ -301,11 +295,7 @@ resource "msgraph_resource_action" "sharepoint-catalog-associations" {
   method       = "POST"
 
   body = {
-<<<<<<< HEAD
-    requestType   = "AdminAdd"
-=======
-    requestType  = "AdminAdd"
->>>>>>> 1f9b4e1 (fix: Handle SharePointOnline resource associations via msgraph API)
+    requestType = "AdminAdd"
     justification = ""
     resource = {
       originId     = each.value.resource_origin_id
