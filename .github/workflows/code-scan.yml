@@ -12,8 +12,8 @@ permissions:
   contents: read
 
 jobs:
-  trivy:
-    name: Run Trivy scan report
+  msdo-iac:
+    name: Run Azure Defender for DevOps IaC scan
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -24,39 +24,20 @@ jobs:
       - name: Clone repo
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Run Trivy vulnerability scanner (Table)
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+      - name: Run Microsoft Security DevOps
+        uses: microsoft/security-devops-action@08976cb623803b1b36d7112d4ff9f59eae704de0 # v1.12.0
+        id: msdo
         with:
-          scan-type: 'config'
-          trivy-config: '.github/trivy.yml'
-          
-      - name: Run Trivy vulnerability scanner (Sarif)
-        if: success() || failure()
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
-        with:
-          scan-type: 'config'
-          severity: 'MEDIUM,CRITICAL,HIGH'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          ignore-unfixed: true
-  
-      - name: Upload Trivy scan results to GitHub Security tab
-        if: success() || failure()
-        uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba # v4.35.5
-        with:
-          sarif_file: 'trivy-results.sarif'
+          categories: 'IaC'
 
-      - name: Publish Trivy Output to Summary
+      - name: Upload results to GitHub Security tab
         if: success() || failure()
-        run: |
-          if [[ -s trivy.txt ]]; then
-            {
-              echo "### Security Output"
-              echo "<details><summary>Click to expand</summary>"
-              echo ""
-              echo '```terraform'
-              cat trivy.txt
-              echo '```'
-              echo "</details>"
-            } >> $GITHUB_STEP_SUMMARY
-          fi
+        uses: github/codeql-action/upload-sarif@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v4.36.0
+        with:
+          sarif_file: ${{ steps.msdo.outputs.sarifFile }}
+
+      - name: Upload alerts file as a workflow artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: alerts
+          path: ${{ steps.msdo.outputs.sarifFile }}
