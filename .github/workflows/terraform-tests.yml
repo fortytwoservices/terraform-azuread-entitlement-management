@@ -1,0 +1,73 @@
+name: Terraform Tests
+
+on:
+  pull_request:
+    paths:
+      - "**.tf"
+      - "tests/**"
+      - "Makefile"
+      - ".github/workflows/terraform-tests.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "**.tf"
+      - "tests/**"
+      - "Makefile"
+      - ".github/workflows/terraform-tests.yml"
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  terraform-tests:
+    name: Run Terraform Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: 1.7.0
+
+      - name: Terraform Format Check
+        id: fmt
+        run: terraform fmt -check -recursive
+        continue-on-error: false
+
+      - name: Validate Root Module
+        id: validate-root
+        run: |
+          terraform init -backend=false
+          terraform validate
+
+      - name: Validate Basic Example
+        id: validate-basic
+        run: |
+          cd examples/basic
+          terraform init -backend=false
+          terraform validate
+
+      - name: Validate Advanced Example
+        id: validate-advanced
+        run: |
+          cd examples/advanced
+          terraform init -backend=false
+          terraform validate
+
+      - name: Test Summary
+        if: always()
+        run: |
+          echo "## Terraform Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Test | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Format Check | ${{ steps.fmt.outcome == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Root Module Validation | ${{ steps.validate-root.outcome == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Basic Example Validation | ${{ steps.validate-basic.outcome == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Advanced Example Validation | ${{ steps.validate-advanced.outcome == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+
